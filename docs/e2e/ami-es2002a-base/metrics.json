@@ -1,0 +1,20 @@
+{
+  "started_utc": "2026-11-04T15:42:21.837987+00:00",
+  "audio_url": "https://groups.inf.ed.ac.uk/ami/AMICorpusMirror/amicorpus/ES2002a/audio/ES2002a.Mix-Headset.wav",
+  "annotations_url": "https://groups.inf.ed.ac.uk/ami/AMICorpusAnnotations/ami_public_manual_1.6.2.zip",
+  "license": "CC BY 4.0; AMI Consortium / University of Edinburgh",
+  "python": "3.14.7",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cpu": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+  "logical_cpus": 20,
+  "versions": {
+    "faster-whisper": "1.2.1",
+    "ctranslate2": "4.8.5",
+    "openai": "2.54.0",
+    "chromadb": "1.5.9",
+    "meetmind": "0.2.0"
+  },
+  "status": "failed",
+  "failed_stage": "download",
+  "error_type": "ReadTimeout"
+}

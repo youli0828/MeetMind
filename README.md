@@ -115,7 +115,7 @@ CLI 不打印密钥或原始 API 错误响应。结果包含会议文本，默�
 
 示例及对应固定纪要随包安装，许可与来源见 [samples/README.md](samples/README.md)。
 Demo 的时间戳和纪要均为手工编写，不能作为音频识别或模型抽取质量的证据。
-本次交付没有使用真实密钥调用 LLM，也没有下载权重执行真实语音识别。
+M1/M2 初始交付仅做离线验证；后续真实音频、LLM 和检索评测见文末实测章节。
 
 ## M2：启动 Web 工作台
 
@@ -207,8 +207,63 @@ Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出
 
 README 和 CI 按要求提前到 M1。说话人分离、实时音频、长会议摘要分块和任务外部写入仍未实现。
 历史检索分块已实现，但纪要生成仍受 `MAX_TRANSCRIPT_CHARS` 限制。
-没有声称任何模型准确率、性能或质量指标，单元测试通过不代表模型效果。
+单元测试通过不代表模型效果；文末实测指标仅代表指定样本和配置。
 
-未执行真实 ASR、付费聊天或 embedding 调用；未在 GitHub 远端执行 CI。
+初始交付未执行真实 ASR、聊天或 embedding 调用；本次实测另见下文。未在 GitHub 远端执行 CI。
 
 MIT License。
+
+## ??????
+
+真实端到端评测（2026-11-05，北京时间）：使用
+[AliMeeting / OpenSLR 119](https://www.openslr.org/119/) 的
+`R8001_M8004_MS801` 前 5 分钟、远场通道 0。来源为官方页面的国内阿里云下载源，
+许可 **CC BY-SA 4.0**，署名 Alibaba Group / Yu et al., ICASSP 2022。
+音频仅保存在已 gitignore 的 `data/external/`，不上传音频；转写和问题文本会发送到
+`.env` 配置的智谱服务。文本结果、完整复现步骤和许可说明见 [docs/e2e](docs/e2e/README.md)。
+
+| 实测项 | 结果 |
+|---|---|
+| 音频时长 | 300.000 秒 |
+| faster-whisper | base / CPU / int8 / zh |
+| 转写墙钟时间 | 19.848 秒，含模型初始化，不含权重下载 |
+| 实时率 RTF | 0.06616（转写秒数 / 音频秒数） |
+| 结构化纪要 | glm-4-flash / json_object；35.734 秒 |
+| 纪要校验 | Schema 和来源 ID 均通过；1 次尝试，结构重试 0，HTTP 重试 0 |
+| 检索问答 | embedding-3 + Chroma/BM25；索引及问答 4.837 秒，1 条引用 |
+| 局部参考 CER | 58.43%，201/344 字；7 段、66.53 秒，独立裁切解码 |
+
+问：“这段会议讨论了哪些主要问题？请依据原文回答。”
+模型原答：“会议讨论了手机设计、目标人群、产品功能、市场定位、年龄适应性以及不同年龄段用户的需求差异等问题。”
+引用范围 **00:06.860–04:50.300**，分段 ID 0–106，时间与原文核对通过，详见
+[qa.json](docs/e2e/alimeeting-20261105-base-rerun/qa.json)。本次只有一个短会议检索块，
+不能据此推断多会议检索召回率。
+
+**流程跑通，内容质量仍有明显问题。** ASR 把开场产品研讨误转成“新规管理的主席”，
+纪要随后也提取了这个错误议题。结构校验不能发现这种错误。
+CER 来自第三方公开的带时间边界参考子集，参考文本已与 Icefall 日志的 `ref` 核对；
+不做繁简转换，包含繁简差异、数字写法和口头语差异。
+完整 300 秒的对齐参考尚未取得，故整段 CER/WER 未报告；上述 58.43% 不能当作整段 CER。
+原始生成文本未人工润色；[metrics.json](docs/e2e/alimeeting-20261105-base-rerun/metrics.json)
+和 [cer_subset.json](docs/e2e/alimeeting-20261105-base-rerun/cer_subset.json) 保存实际数值与方法。
+
+复现时先安装 `.[dev,asr]`，并使用现有 `.env`；换用尚不存在的新输出目录。
+权重下载前设置镜像；下载脚本支持国内备用源并核对完整 SHA-256：
+
+```powershell
+$env:HF_ENDPOINT = "https://hf-mirror.com"
+$env:HF_HUB_DISABLE_XET = "1"
+& .\.venv\Scripts\python.exe docs/e2e/download_alimeeting.py
+& .\.venv\Scripts\python.exe docs/e2e/download_base.py
+& .\.venv\Scripts\python.exe docs/e2e/evaluate_alimeeting.py `
+  --model-path data/external/faster-whisper-base --output-dir docs/e2e/new-run
+& .\.venv\Scripts\python.exe docs/e2e/evaluate_cer_subset.py --run-dir docs/e2e/new-run
+```
+
+首次运行遇到 faster-whisper 1.2.1 / PyAV 19.0.2 解码参数不兼容，失败记录保留于
+[首次运行目录](docs/e2e/alimeeting-20261105-base/metrics.json)。ASR 依赖已限制 `av<19`，
+以上结果来自 PyAV 18.1.0 重跑。HF 镜像下载间歇超时，最终补齐权重且完整哈希通过。
+AMI 此前下载曾超时，本轮跳过英语评测。未执行 git commit 或 push。
+实测后 `ruff check .`、`ruff format --check .`、`pip check` 均通过，
+`pytest -q` 为 **76 passed**（1 条 Chroma 依赖弃用警告）；
+检查记录见 [verification.json](docs/e2e/alimeeting-20261105-base-rerun/verification.json)。

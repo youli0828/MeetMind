@@ -1,0 +1,95 @@
+{
+  "scope": "Seven single-speaker reference-aligned excerpts within first 300s; independently decoded, not CER for the continuous five-minute transcript",
+  "reference_url": "https://datasets-server.huggingface.co/first-rows?dataset=playwithmino/alimeeting-eval-8k&config=default&split=test",
+  "crosscheck_url": "https://huggingface.co/desh2608/icefall-asr-alimeeting-pruned-transducer-stateless7/resolve/main/log/greedy_search/recogs-eval_sdm-greedy_search-epoch-15-avg-8-context-2-max-sym-per-frame-1.txt",
+  "reference_cache_sha256": "e4a27cc49da7d315840e1f624a401153c61ad07d83f12eca6232ca2e589e1d60",
+  "crosscheck": "All normalized references exactly match corpus-derived Icefall ref entries; no Icefall hypotheses used",
+  "method": "Per-excerpt Levenshtein character distance; NFKC, lowercase, keep Unicode alphanumeric only; no simplified/traditional conversion. Sum edit distances / sum reference lengths. No Chinese word-based WER.",
+  "model": "base",
+  "device": "cpu",
+  "compute_type": "int8",
+  "reference_audio_seconds": 66.53,
+  "evaluation_wall_seconds": 7.745942699999432,
+  "edit_distance": 201,
+  "reference_characters": 344,
+  "cer": 0.5843023255813954,
+  "excerpts": [
+    {
+      "sample_id": "R8001_M8004_00006900_00018290",
+      "start": 6.9,
+      "end": 18.29,
+      "reference": "好嗯，咱们今天针对咱们公司新出产的新出的一款这个手机啊产品啊，进行一下这个研讨会首先咱们确认一下咱们这个产品的目标，这个人群客户群这一块儿。",
+      "hypothesis": "好 等於今天就是能夠自信出場聽出一款用的產品今天一家編號會我再讓大家去看一下產品的目標這個人群 扣群那一款",
+      "reference_normalized": "好嗯咱们今天针对咱们公司新出产的新出的一款这个手机啊产品啊进行一下这个研讨会首先咱们确认一下咱们这个产品的目标这个人群客户群这一块儿",
+      "hypothesis_normalized": "好等於今天就是能夠自信出場聽出一款用的產品今天一家編號會我再讓大家去看一下產品的目標這個人群扣群那一款",
+      "edit_distance": 48,
+      "reference_characters": 66
+    },
+    {
+      "sample_id": "R8001_M8004_00018730_00022430",
+      "start": 18.73,
+      "end": 22.43,
+      "reference": "嗯，首先谈一下大家伙的一个看法啊嗯，那。",
+      "hypothesis": "我今天還跟大家補一個套",
+      "reference_normalized": "嗯首先谈一下大家伙的一个看法啊嗯那",
+      "hypothesis_normalized": "我今天還跟大家補一個套",
+      "edit_distance": 14,
+      "reference_characters": 17
+    },
+    {
+      "sample_id": "R8001_M8004_00024960_00035740",
+      "start": 24.96,
+      "end": 35.74,
+      "reference": "我觉得咱们这个这个目标人群可以不不用定的那么确定，然后基本上就是，嗯，让他什么什么类的人群，然后都可以这样呢咱们的面儿比较广。",
+      "hypothesis": "我觉得咱这个明天不要人群可以不用你能不能去的地方然后基本上就是让它什么也什么也的人群然后都可以这样的咱们的面不要火",
+      "reference_normalized": "我觉得咱们这个这个目标人群可以不不用定的那么确定然后基本上就是嗯让他什么什么类的人群然后都可以这样呢咱们的面儿比较广",
+      "hypothesis_normalized": "我觉得咱这个明天不要人群可以不用你能不能去的地方然后基本上就是让它什么也什么也的人群然后都可以这样的咱们的面不要火",
+      "edit_distance": 23,
+      "reference_characters": 58
+    },
+    {
+      "sample_id": "R8001_M8004_00083780_00097280",
+      "start": 83.78,
+      "end": 97.28,
+      "reference": "我感觉可以根据年龄，呃和这这种就是不同的人士做一下区分，呃我感觉我们可以主要针对就是嗯十八到四十五之岁的中青年人人群嘛。",
+      "hypothesis": "我感觉可以根据年龄和这种不同的人事做下去分我感觉我们可以做的真的就是18到45之所以的中青年人均",
+      "reference_normalized": "我感觉可以根据年龄呃和这这种就是不同的人士做一下区分呃我感觉我们可以主要针对就是嗯十八到四十五之岁的中青年人人群嘛",
+      "hypothesis_normalized": "我感觉可以根据年龄和这种不同的人事做下去分我感觉我们可以做的真的就是18到45之所以的中青年人均",
+      "edit_distance": 23,
+      "reference_characters": 57
+    },
+    {
+      "sample_id": "R8001_M8004_00186340_00198320",
+      "start": 186.34,
+      "end": 198.32,
+      "reference": "啊好可以可以反正这个，就是跨度反正不就，不用特别大，从年轻人来说，咱们主单主持年轻年轻化这一块儿吧，年轻人这一块儿，好吧，什么十八到三。",
+      "hypothesis": "吵吵吵吵对我觉得这个就是怕度反正就是不用车为大从年龄门来说等主车年龄化这块年轻人化18到3",
+      "reference_normalized": "啊好可以可以反正这个就是跨度反正不就不用特别大从年轻人来说咱们主单主持年轻年轻化这一块儿吧年轻人这一块儿好吧什么十八到三",
+      "hypothesis_normalized": "吵吵吵吵对我觉得这个就是怕度反正就是不用车为大从年龄门来说等主车年龄化这块年轻人化18到3",
+      "edit_distance": 37,
+      "reference_characters": 60
+    },
+    {
+      "sample_id": "R8001_M8004_00209440_00217590",
+      "start": 209.44,
+      "end": 217.59,
+      "reference": "那咱们这个，后续再定一下这个就是十八到五十岁之间的色彩颜色啊，咱们到时候确认一下这个颜色好吧。",
+      "hypothesis": "我們後面的定義下就是幫了我們演的色彩角色我們弄著圈一下那個顏色",
+      "reference_normalized": "那咱们这个后续再定一下这个就是十八到五十岁之间的色彩颜色啊咱们到时候确认一下这个颜色好吧",
+      "hypothesis_normalized": "我們後面的定義下就是幫了我們演的色彩角色我們弄著圈一下那個顏色",
+      "edit_distance": 33,
+      "reference_characters": 44
+    },
+    {
+      "sample_id": "R8001_M8004_00218620_00225650",
+      "start": 218.62,
+      "end": 225.65,
+      "reference": "首先咱们说这个，促销方式这一块儿，大家觉得这个，以什么样的这个促销方式进行促销会觉得好一些。",
+      "hypothesis": "首先能出这个速到方式进块大家别的一个以上的一个速到方式进行速到会应该好解",
+      "reference_normalized": "首先咱们说这个促销方式这一块儿大家觉得这个以什么样的这个促销方式进行促销会觉得好一些",
+      "hypothesis_normalized": "首先能出这个速到方式进块大家别的一个以上的一个速到方式进行速到会应该好解",
+      "edit_distance": 23,
+      "reference_characters": 42
+    }
+  ]
+}

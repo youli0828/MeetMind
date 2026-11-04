@@ -1,0 +1,79 @@
+{
+  "started_utc": "2026-11-04T16:22:08.971629+00:00",
+  "source": {
+    "source_url": "https://speech-lab-share-data.oss-cn-shanghai.aliyuncs.com/AliMeeting/openlr/Eval_Ali.tar.gz",
+    "source_page": "https://www.openslr.org/119/",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Alibaba Group / AliMeeting (Yu et al., ICASSP 2022)",
+    "archive_member": "Eval_Ali/Eval_Ali_far/audio_dir/R8001_M8004_MS801.wav",
+    "transformation": "First 300 seconds, channel index 0, PCM16 mono 16kHz",
+    "downloaded_bytes": 67108864,
+    "download_wall_seconds": 208.3293029000015,
+    "audio_seconds": 300,
+    "sha256": "123c057c80145117cf5efa3d2c985447fdbd48504e33f5ad6bc773e26844e8ff",
+    "clip": "data/external/alimeeting/R8001_M8004_MS801.ch0.first300s.wav"
+  },
+  "python": "3.14.7",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "cpu": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+  "logical_cpus": 20,
+  "versions": {
+    "faster-whisper": "1.2.1",
+    "ctranslate2": "4.8.5",
+    "av": "18.1.0",
+    "openai": "2.54.0",
+    "chromadb": "1.5.9",
+    "meetmind": "0.2.0"
+  },
+  "asr_model": "base",
+  "asr_model_path": "data/external/faster-whisper-base",
+  "asr_device": "cpu",
+  "asr_compute_type": "int8",
+  "hf_endpoint": "https://hf-mirror.com",
+  "audio_seconds": 300,
+  "llm_model": "glm-4-flash",
+  "response_format": "json_object",
+  "embedding_model": "embedding-3",
+  "transcription_timing_scope": "Includes model initialization; excludes weight download",
+  "cer": null,
+  "wer": null,
+  "reference_status": "No complete aligned reference for continuous 300s. Seven reference excerpts obtained and crosschecked; see cer_subset.json.",
+  "ami": "Skipped: previous local download failed with ReadTimeout; prioritize Chinese.",
+  "transcription_wall_seconds": 19.847557200002484,
+  "real_time_factor": 0.06615852400000828,
+  "segments": 107,
+  "minutes_wall_seconds": 35.73402299999725,
+  "minutes_schema_valid": true,
+  "minutes_source_ids_valid": true,
+  "retrieval_index_and_qa_wall_seconds": 4.83714279999549,
+  "qa_citations_valid": true,
+  "qa_citations": 1,
+  "status": "passed",
+  "completion_attempts": [
+    {
+      "stage": "minutes",
+      "validation_retry": false,
+      "finish_reason": "stop"
+    },
+    {
+      "stage": "retrieval_qa",
+      "validation_retry": false,
+      "finish_reason": "stop"
+    }
+  ],
+  "minutes_schema_attempts": 1,
+  "minutes_validation_retries": 0,
+  "minutes_http_requests": 1,
+  "minutes_transport_retries": 0,
+  "http_requests_by_path": {
+    "/api/paas/v4/chat/completions": 2,
+    "/api/paas/v4/embeddings": 2
+  },
+  "cer_subset": {
+    "cer": 0.5843023255813954,
+    "edit_distance": 201,
+    "reference_characters": 344,
+    "reference_audio_seconds": 66.53,
+    "scope": "Seven single-speaker reference-aligned excerpts within first 300s; independently decoded, not CER for the continuous five-minute transcript"
+  }
+}

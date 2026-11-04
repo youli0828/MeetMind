@@ -10,6 +10,7 @@ __pycache__/
 build/
 dist/
 outputs/
+data/external/
 .coverage
 htmlcov/
 *.wav

@@ -1,0 +1,4 @@
+{
+  "failure_diagnosis": "faster-whisper 1.2.1 with PyAV 19.0.2: av.open rejects metadata_errors",
+  "upstream_issue": "https://github.com/SYSTRAN/faster-whisper/issues/1589"
+}

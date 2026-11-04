@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "command": [
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.02757500000006985,
+      "stdout": "\u001b[1;32mAll checks passed!\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.02872429999843007,
+      "stdout": "40 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.166054499997699,
+      "stdout": "........................................................................ [ 94%]\n....                                                                     [100%]\n============================== warnings summary ===============================\ntests/test_m2.py::test_actual_chroma_persistence_offline\n  D:\\个人相关\\个人项目\\MeetMind\\.venv\\Lib\\site-packages\\chromadb\\telemetry\\opentelemetry\\__init__.py:128: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead\n    if asyncio.iscoroutinefunction(f):\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n76 passed, 1 warning in 3.09s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.49033570000028703,
+      "stdout": "No broken requirements found.\n",
+      "stderr": ""
+    }
+  ],
+  "secret_scan_passed": true,
+  "docs_no_audio": true,
+  "scanned_text_files": 17
+}

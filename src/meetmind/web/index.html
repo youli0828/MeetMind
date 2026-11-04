@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>MeetMind · 会议工作台</title>
+  <style>
+    :root{font-family:system-ui,sans-serif;color:#142d36;background:#f1f5f4;line-height:1.6}
+    body{max-width:1160px;margin:auto;padding:32px 24px}h1{margin:0;font-size:36px}
+    h2{font-size:21px;margin:0 0 16px}p{margin:8px 0}header{margin-bottom:24px}
+    .tag{color:#38685e}main{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    section{background:white;padding:24px;border:1px solid #dce6e2;border-radius:12px}
+    .wide{grid-column:1/-1}label{display:block;margin:12px 0 4px;font-size:14px}
+    input,select,textarea,button{box-sizing:border-box;font:inherit;border-radius:6px}
+    input,select,textarea{width:100%;padding:9px;border:1px solid #b7cac4;background:#fff}
+    button{border:0;background:#176454;color:white;padding:9px 15px;cursor:pointer;margin:10px 6px 0 0}
+    button:disabled{opacity:.5;cursor:wait}button.secondary{background:#e6efeb;color:#174d40}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.7 system-ui;max-height:440px;overflow:auto}
+    a{color:#176454}#status{min-height:24px}#status.error{color:#a32c28}
+    .muted{font-size:14px;color:#526d65}.source{border-left:3px solid #80b4a3;padding-left:12px;margin-top:12px}
+    details{margin:12px 0}summary{cursor:pointer}#chatlog{max-height:440px;overflow:auto}
+    .message{padding:12px;background:#f0f5f3;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+    @media(max-width:760px){main{grid-template-columns:1fr}body{padding:20px 14px}}
+  </style>
+</head>
+<body>
+<header><p class="tag">MEETMIND / M2</p><h1>让会议记录成为下一步行动</h1>
+<p>导入会议，追溯原文，保存待办与日程。</p><p id="mode" class="muted"></p>
+<p id="status" role="status" aria-live="polite"></p></header>
+<main>
+  <section><h2>01 / 导入会议</h2>
+    <label for="transcript">转写 JSON（M1 transcript.json）</label><input id="transcript" type="file" accept=".json">
+    <label for="minutes">纪要 JSON（可选；留空调用模型）</label><input id="minutes" type="file" accept=".json">
+    <button id="import">导入并建立索引</button><button id="sample" class="secondary">导入虚构示例</button>
+    <details><summary>从音频开始</summary><label for="audio">本地音频，最大 50 MB</label>
+      <input id="audio" type="file" accept=".wav,.mp3,.m4a,.flac,.ogg,.webm"><button id="upload">转写并生成纪要</button>
+      <p class="muted">需要本地 ASR 权重和 LLM。音频在本机转写；文本会发送至配置的模型服务。</p></details>
+  </section>
+  <section><h2>02 / 历史会议</h2><label for="meeting">选择会议</label><select id="meeting"></select>
+    <button id="refresh" class="secondary">刷新</button><button id="markdown">导出 Markdown</button>
+    <button id="docx">导出 DOCX</button><pre id="meetingview">尚无会议。</pre><div id="downloads"></div>
+  </section>
+  <section><h2>03 / 有据可查的问答</h2><form id="askform"><label for="question">向历史会议提问</label>
+    <input id="question" required maxlength="2000" placeholder="预算由谁负责？"><button>检索并回答</button></form>
+    <pre id="answer"></pre><div id="sources"></div>
+  </section>
+  <section><h2>04 / 行动与日程</h2><label for="action">当前会议的行动项</label><select id="action"></select>
+    <button id="todo">保存待办</button><pre id="todos"></pre>
+    <details><summary>生成日历文件</summary><form id="calendar"><label for="eventtitle">日程标题</label>
+    <input id="eventtitle" required maxlength="300"><label for="start">开始时间（ISO 8601，含时区）</label>
+    <input id="start" required placeholder="2026-11-05T09:00:00+08:00"><label for="end">结束时间（含时区）</label>
+    <input id="end" required placeholder="2026-11-05T10:00:00+08:00"><button>生成 .ics</button></form></details>
+  </section>
+  <section class="wide"><h2>05 / Agent 助手</h2><p class="muted">可请求搜索、保存待办、导出或生成日历。工具结果逐步显示；模型文字在本轮完成后显示。
+    对话仅保留在当前页面，刷新即清空。涉及写入时，请在发送前核对请求。</p>
+    <div id="chatlog" aria-live="polite"></div><form id="chatform"><label for="chatinput">消息</label>
+    <textarea id="chatinput" rows="2" required maxlength="2000" placeholder="搜索预算相关会议，并告诉我有哪些行动项"></textarea>
+    <button>发送</button><button type="button" id="clear" class="secondary">清空对话</button></form>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let history = [];
+
+async function api(path, body) {
+  const response = await fetch(path, body === undefined ? {} : {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw Error(typeof error.detail === 'string' ? error.detail : '请求参数无效');
+  }
+  return response.json();
+}
+
+function status(text, error = false) {
+  $('status').textContent = text;
+  $('status').className = error ? 'error' : '';
+}
+
+async function work(fn) {
+  for (const button of document.querySelectorAll('button')) button.disabled = true;
+  status('处理中…');
+  try {
+    await fn();
+    status('已完成');
+  } catch (error) {
+    status(error.message, true);
+  } finally {
+    for (const button of document.querySelectorAll('button')) button.disabled = false;
+  }
+}
+
+function option(parent, text, value) {
+  const element = document.createElement('option');
+  element.textContent = text;
+  element.value = value;
+  parent.append(element);
+}
+
+function actionText(action) {
+  return action.task + ' · ' + (action.owner || '负责人未指定') +
+    ' · ' + (action.due || '截止时间未指定');
+}
+
+function time(seconds) {
+  const ms = Math.round(seconds * 1000);
+  return [Math.floor(ms / 3600000), Math.floor(ms / 60000) % 60,
+    Math.floor(ms / 1000) % 60].map(n => String(n).padStart(2, '0')).join(':') +
+    '.' + String(ms % 1000).padStart(3, '0');
+}
+
+function meetingText(meeting) {
+  const minutes = meeting.minutes;
+  return [
+    minutes.title,
+    '摘要\n' + minutes.summary,
+    '议题\n' + (minutes.topics.map(t => t.title + '：' + t.discussion).join('\n') || '未提及'),
+    '决策\n' + (minutes.decisions.map(d => d.text).join('\n') || '未提及'),
+    '行动项\n' + (minutes.action_items.map(actionText).join('\n') || '未提及'),
+    '原文\n' + meeting.transcript.segments.map(s =>
+      time(s.start) + '–' + time(s.end) + ' ' + (s.speaker || '说话人未知') + '：' + s.text
+    ).join('\n')
+  ].join('\n\n');
+}
+
+async function loadMeeting() {
+  if (!$('meeting').value) return;
+  const meeting = await api('/meetings/' + encodeURIComponent($('meeting').value));
+  $('meetingview').textContent = meetingText(meeting);
+  $('action').replaceChildren();
+  meeting.minutes.action_items.forEach((a, i) => option($('action'), a.task, i));
+}
+
+async function refresh(selected) {
+  const list = await api('/meetings');
+  $('meeting').replaceChildren();
+  list.forEach(m => option($('meeting'), m.title, m.id));
+  if (selected) $('meeting').value = selected;
+  await loadMeeting();
+  $('todos').textContent = (await api('/todos')).map(actionText).join('\n\n') || '尚无已保存待办。';
+}
+
+async function tool(name, args) {
+  return api('/tools', {name, arguments: args});
+}
+
+function download(result) {
+  if (!result.url || !/^\/artifacts\/[a-f0-9]{32}$/.test(result.url)) return;
+  const link = document.createElement('a');
+  link.href = result.url;
+  link.textContent = '下载 ' + result.filename;
+  link.download = result.filename;
+  const paragraph = document.createElement('p');
+  paragraph.append(link);
+  $('downloads').append(paragraph);
+}
+
+$('import').onclick = () => work(async () => {
+  const file = $('transcript').files[0];
+  if (!file) throw Error('请选择转写 JSON');
+  const body = {transcript: JSON.parse(await file.text())};
+  const minutes = $('minutes').files[0];
+  if (minutes) body.minutes = JSON.parse(await minutes.text());
+  const saved = await api('/meetings', body);
+  await refresh(saved.id);
+});
+
+$('sample').onclick = () => work(async () => {
+  const saved = await api('/meetings', await api('/sample'));
+  await refresh(saved.id);
+});
+
+$('upload').onclick = () => work(async () => {
+  const file = $('audio').files[0];
+  if (!file || file.size > 50 * 1024 * 1024) throw Error('请选择不超过 50 MB 的音频');
+  const extension = '.' + file.name.split('.').pop().toLowerCase();
+  const response = await fetch('/audio?extension=' + encodeURIComponent(extension), {
+    method: 'POST', headers: {'Content-Type': 'application/octet-stream'}, body: file
+  });
+  if (!response.ok) throw Error('音频处理失败，请检查服务配置和音频格式');
+  await refresh((await response.json()).id);
+});
+
+$('meeting').onchange = () => work(loadMeeting);
+$('refresh').onclick = () => work(() => refresh());
+for (const format of ['markdown', 'docx']) {
+  $(format).onclick = () => work(async () => download(
+    await tool('export_' + format, {meeting_id: $('meeting').value})
+  ));
+}
+
+$('todo').onclick = () => work(async () => {
+  if (!$('action').value) throw Error('没有可保存的行动项');
+  await tool('create_todo', {
+    meeting_id: $('meeting').value, action_index: Number($('action').value)
+  });
+  await refresh($('meeting').value);
+});
+
+$('calendar').onsubmit = event => {
+  event.preventDefault();
+  work(async () => download(await tool('create_calendar_event', {
+    meeting_id: $('meeting').value, title: $('eventtitle').value,
+    start: $('start').value, end: $('end').value
+  })));
+};
+
+$('askform').onsubmit = event => {
+  event.preventDefault();
+  work(async () => {
+    const answer = await api('/ask', {query: $('question').value, k: 5});
+    $('answer').textContent = answer.text;
+    $('sources').replaceChildren();
+    for (const source of answer.citations) {
+      const paragraph = document.createElement('p');
+      paragraph.className = 'source';
+      paragraph.textContent = source.title + ' / ' + time(source.start) + '–' + time(source.end) +
+        ' / ' + source.meeting_id + ' / 分段 ' + source.segment_ids.join(', ') + '\n' + source.text;
+      $('sources').append(paragraph);
+    }
+  });
+};
+
+function message(text) {
+  const paragraph = document.createElement('div');
+  paragraph.className = 'message';
+  paragraph.textContent = text;
+  $('chatlog').append(paragraph);
+}
+
+function toolText(result) {
+  if (result.error) return '未执行：参数或引用无效，请补充会议信息；日程需明确起止时间和时区。';
+  if (result.sources) return result.sources.map(s =>
+    s.title + ' [' + time(s.start) + '–' + time(s.end) + ']\n' + s.text
+  ).join('\n\n') || '没有找到会议。';
+  if (result.url) return '已生成 ' + result.filename + '，可在历史会议区域下载。';
+  if (result.minutes) return meetingText(result);
+  if (result.task) return '已保存待办：' + actionText(result);
+  return '工具已完成。';
+}
+
+$('chatform').onsubmit = event => {
+  event.preventDefault();
+  work(async () => {
+    const text = $('chatinput').value;
+    message('你：' + text);
+    const response = await fetch('/chat', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({message: text, history: history.slice(-20)})
+    });
+    if (!response.ok) throw Error('Agent 请求失败');
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = '';
+    let final = '';
+    let failed = false;
+    while (true) {
+      const {value, done} = await reader.read();
+      if (done) break;
+      pending += decoder.decode(value, {stream: true});
+      let end;
+      while ((end = pending.indexOf('\n\n')) >= 0) {
+        const packet = pending.slice(0, end);
+        pending = pending.slice(end + 2);
+        if (!packet.startsWith('data: ')) continue;
+        const event = JSON.parse(packet.slice(6));
+        if (event.event === 'answer') {
+          final = event.text;
+          message('MeetMind：' + final);
+        }
+        if (event.event === 'tool') {
+          message(toolText(event.result));
+          download(event.result);
+        }
+        if (event.event === 'error') failed = true;
+      }
+    }
+    if (!final) failed = true;
+    if (!failed) {
+      history.push({role: 'user', content: text}, {role: 'assistant', content: final.slice(0, 16000)});
+      $('chatinput').value = '';
+    }
+    await refresh($('meeting').value);
+    if (failed) throw Error('Agent 未完成；已执行的操作已保存，请核对后重试。');
+  });
+};
+
+$('clear').onclick = () => {
+  history = [];
+  $('chatlog').replaceChildren();
+};
+
+work(async () => {
+  const health = await api('/health');
+  $('mode').textContent = health.demo ?
+    '离线演示：哈希向量、原文摘录与固定搜索流程，不代表模型能力。' :
+    '模型模式：文本与检索查询会发送至配置的模型服务。此工作台用于本机单用户。';
+  await refresh();
+});
+</script>
+</body></html>

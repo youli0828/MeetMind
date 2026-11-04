@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "meetmind"
-version = "0.1.0"
-description = "Timestamped audio transcription and structured meeting minutes"
+version = "0.2.0"
+description = "Meeting minutes, tool-calling agent and timestamp-cited hybrid retrieval"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -13,11 +13,16 @@ dependencies = [
   "openai>=1.60,<3",
   "pydantic>=2.10,<3",
   "python-dotenv>=1.0,<2",
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "chromadb>=1.0,<2",
+  "rank-bm25>=0.2.2,<1",
+  "python-docx>=1.1,<2",
 ]
 
 [project.optional-dependencies]
 asr = ["faster-whisper>=1.1,<2"]
-dev = ["pytest>=8,<10", "ruff>=0.9,<1"]
+dev = ["pytest>=8,<10", "ruff>=0.9,<1", "httpx>=0.28,<1"]
 
 [project.scripts]
 meetmind = "meetmind.cli:main"

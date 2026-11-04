@@ -1,6 +1,6 @@
 # MeetMind
 
-按 [设计 v2](docs/design-v2.md) 实现的 M1：本地音频 → 带时间戳的转写 → 结构化会议纪要，导出 JSON 和 Markdown。
+按 [设计 v2](docs/design-v2.md) 实现 M1 + M2：音频转纪要、Agent 工具调用、带时间戳引用的历史会议混合检索问答，以及 FastAPI/Web 工作台。
 
 ## 架构
 
@@ -16,10 +16,23 @@ flowchart LR
     G -->|格式或引用失败，有限重试| F
     G --> H[minutes.json + minutes.md]
     D --> I[transcript.json]
+    D --> J[按分段边界分块]
+    J --> K[OpenAI 兼容 Embeddings / Chroma]
+    J --> L[中文单字与英文词 / BM25]
+    K --> M[RRF 混合排序]
+    L --> M
+    M --> N[问答 / 原文与时间戳引用校验]
+    W[Web 工作台] --> API[FastAPI]
+    API --> N
+    API --> AG[有轮次上限的 Tool Calling Agent]
+    AG --> TO[搜索 / 读取会议 / 待办 / ICS / Markdown / DOCX]
+    TO --> DB[SQLite 会议、待办与下载文件]
 ```
 
 `src/meetmind/asr/` 定义转写接口和本地实现；`summarize/` 定义纪要接口、提示词和客户端；
-`models.py` 定义数据契约；`pipeline.py` 编排流程；`tools/export.py` 渲染；`cli.py` 提供命令行。
+`models.py` 定义数据契约；`pipeline.py` 编排 CLI 流程；`tools/` 提供导出与行动工具；
+`storage.py`、`retrieval/`、`agent/`、`service.py` 分别负责持久化、检索、工具循环和服务编排。
+`api.py` 提供 API 并直接服务包内的轻量 HTML/JavaScript 界面，无需前端构建或 CDN。
 测试通过注入假 ASR 和假客户端隔离模型，离线 demo 使用明确标记的固定响应。
 
 ## 快速开始（PowerShell）
@@ -48,7 +61,7 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 ## 配置与数据流
 
 `.env` 默认从当前工作目录读取，或用 `--env-file path/to/.env` 指定；系统环境变量优先。
-`.env.example` 是应纳入版本控制的配置模板，`.env` 已忽略。本目录未初始化 Git 仓库。
+`.env.example` 是应纳入版本控制的配置模板，`.env` 已忽略。本目录已初始化 Git 仓库。
 
 | 配置 | 默认值 / 用途 |
 |---|---|
@@ -62,6 +75,9 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 | `ASR_MODEL` | `small`，模型名称或本地路径 |
 | `ASR_DEVICE` / `ASR_COMPUTE_TYPE` | `cpu` / `int8` |
 | `ASR_LANGUAGE` | 留空自动识别，或指定 `zh` / `en` 等 |
+| `EMBEDDING_MODEL` | `text-embedding-3-small`；与聊天共用 API key/base URL，服务须支持 embeddings |
+| `MEETMIND_DATA_DIR` | `outputs/server`，服务器的 SQLite 与 Chroma 数据目录 |
+| `MEETMIND_DEMO` | `0`；设为 `1` 使用明确标记的离线演示实现 |
 
 使用官方 Python SDK 的 Chat Completions 接口。默认向服务传递严格 JSON Schema，
 并在本地再次校验字段类型及来源分段 ID；兼容模式也执行同样的本地校验。
@@ -70,7 +86,8 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 SDK 对暂时性请求错误最多重试 2 次，结构化结果另按 `LLM_MAX_ATTEMPTS` 重试；
 拒绝请求立即失败，截断、非法 JSON、字段或来源校验失败会重新请求完整结果。
 
-音频由本地 ASR 处理，转写文本会发送到所配置的 LLM 服务；请使用有权处理的会议资料。
+音频由本地 ASR 处理；真实模式下，转写、检索片段、问题和 Agent 对话会发送到所配置的模型服务，
+转写分块与查询也会发送到 embeddings 接口；请使用有权处理的会议资料。
 CLI 不打印密钥或原始 API 错误响应。结果包含会议文本，默认保存在已忽略的 `outputs/`。
 
 ## 输出和单独重试
@@ -100,6 +117,63 @@ CLI 不打印密钥或原始 API 错误响应。结果包含会议文本，默�
 Demo 的时间戳和纪要均为手工编写，不能作为音频识别或模型抽取质量的证据。
 本次交付没有使用真实密钥调用 LLM，也没有下载权重执行真实语音识别。
 
+## M2：启动 Web 工作台
+
+先执行 `pip install -e ".[dev]"` 更新已有虚拟环境；上传真实音频另需 `.[asr]`。
+
+```powershell
+# 完全离线的 M2 演示，无需密钥、ASR 权重或嵌入模型下载：
+$env:MEETMIND_DEMO = "1"
+$env:MEETMIND_DATA_DIR = "outputs/web-demo"
+& .\.venv\Scripts\python.exe -m uvicorn meetmind.api:app --host 127.0.0.1 --port 8000
+```
+
+打开 `http://127.0.0.1:8000`，点击「导入虚构示例」，然后检索问答、保存待办、导出文件，或发送 Agent 消息。
+离线模式使用确定性的哈希向量、原文摘录回答和固定的「搜索 → 展示结果」Agent 流程，**不代表真实模型推理或检索质量**。
+按钮仍会调用真实工具并写入本地 SQLite；离线 Agent 本身只演示搜索，不根据自然语言执行写入。
+离线模式不支持音频；无纪要的 JSON 导入仅接受内置虚构转写，其他转写需同时提供纪要。
+
+真实模式：停止服务，将 `MEETMIND_DEMO` 设为 `0`，配置 `.env` 中的 key、聊天模型、embedding 模型，
+然后用相同命令启动。建议设置独立的 `MEETMIND_DATA_DIR`，避免混入演示数据。
+服务器从当前目录读取 `.env`，环境变量优先；更改配置后需要重启。
+端口可按本机情况更换。服务面向本机单用户，无认证；默认仅绑定 loopback。
+
+工作台支持上传音频或导入 M1 的 `transcript.json`，可同时导入 `minutes.json` 跳过摘要调用。
+每次导入创建独立会议 ID；重复导入会产生另一条会议。会议、待办、导出文件和向量索引在重启后保留。
+待办取自会议中的行动项（不改写负责人/截止时间），同一会议同一行动项重复保存返回同一待办。
+日历要求绝对起止时间和明确时区，输出 `.ics`，不会自动添加到系统日历。
+DOCX 为可编辑文本，含纪要、来源分段编号与时间戳转写；Markdown 同样保留来源。
+
+Agent 使用 OpenAI 兼容 Chat Completions 的 `tools` 协议，最多 6 轮、每轮最多 8 个工具调用，
+参数通过 Pydantic 校验，仅开放固定工具，不接受模型指定文件路径。写入会直接执行到本地存储，
+没有独立审批流；提示词要求只执行用户请求的操作，但这不是对提示注入的安全保证。
+Web 对话由浏览器在后续请求中带回，最多最近 20 条，刷新或清空后丢弃；没有跨页面会话存储。
+`/chat` 使用 SSE 逐步发送开始、已完成工具、最终回答或错误事件，**尚未实现模型逐 token 流式输出**。
+失败前已完成的工具操作保留，重试前请检查待办和下载结果；日历及导出文件不做跨请求去重。
+
+检索按完整转写分段分块（目标 1200 字符，单段过长时保持原段），Chroma 向量结果与 BM25
+通过 Reciprocal Rank Fusion 合并。索引使用显式 embeddings，禁用 Chroma 默认模型下载。
+更换 embedding 模型或 base URL 后使用不同 collection，并从 SQLite 恢复该索引。
+问答 JSON 校验引用必须来自本次检索结果，返回会议 ID、标题、分段 ID、起止秒数和原文；
+无记录或无引用时明确返回依据不足。有效引用只保证出处存在，不保证模型陈述被原文支持。
+当前没有重排模型、相关度拒答阈值、会议日期过滤或“上周”等时间范围推断。
+
+API 文档在 `http://127.0.0.1:8000/docs`：
+
+| 接口 | 用途 |
+|---|---|
+| `POST /meetings` | `{transcript, minutes?}` 导入并索引；不提供纪要时调用 summarizer |
+| `GET /meetings`、`GET /meetings/{id}` | 会议列表和原文/纪要 |
+| `POST /audio?extension=.wav` | 原始音频字节，`Content-Type: application/octet-stream`，最多 50 MiB；内存接收 |
+| `POST /search`、`POST /ask` | `{query, k?: 1..10}`；检索或带引用问答 |
+| `POST /chat` | `{message, history?: [{role: user/assistant, content}]}`；SSE 事件流 |
+| `POST /tools` | `{name, arguments}`；`get_meeting/create_todo/create_calendar_event/export_markdown/export_docx/search_meetings` |
+| `GET /todos`、`GET /artifacts/{id}` | 已保存待办和生成文件下载 |
+| `GET /health`、`GET /sample` | 存活/演示模式、虚构输入样例（health 不检查模型服务可用性） |
+
+Chroma 的接口用法参考[官方 Python API](https://docs.trychroma.com/reference/python)，
+API 测试通过[FastAPI 依赖覆盖](https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/testing-dependencies.md)注入离线服务。
+
 ## 开发与验证
 
 ```powershell
@@ -108,14 +182,19 @@ Demo 的时间戳和纪要均为手工编写，不能作为音频识别或模型
 & .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-测试不需要网络、密钥或 ASR 权重：覆盖假音频到导出的完整链路、CLI、SDK 请求契约、
-ASR 适配器、校验失败重试、未知负责人、配置优先级与错误处理。
+测试不需要网络、密钥或 ASR 权重：保留 M1 全部覆盖，并增加工具参数与日历转义、待办幂等、
+混合检索与引用、Agent 多轮与上限、API/SSE、模拟音频上传、下载文件解析、SQLite/真实 Chroma 重启读取。
+普通网络连接被测试夹具阻断；Windows asyncio 内部 socketpair 是唯一受限豁免。
 GitHub Actions 在 Python 3.10、3.12、3.14 上运行 lint、格式检查、离线测试与 demo；
 工作流已写好，尚未在 GitHub 远端执行。
 
 本次本地验证（Windows，`D:\python\python.exe`，Python 3.14.7）：
-`ruff check .`、`ruff format --check .` 均通过，`pytest -q` 为 **37 passed**；
-`pip check` 无依赖冲突，faster-whisper 导入成功，CLI 离线 demo 已生成三个输出文件。
+`ruff check .`、`ruff format --check .`、`pip check` 均通过，`pytest -q` 为 **76 passed**
+（包含原有 37 项；1 条 Chroma 依赖内部的 Python 3.14 弃用警告）。
+CLI 离线 demo、wheel 构建与包内 Web/样例资源检查通过。
+本机 Edge 浏览器实测通过：虚构示例导入、时间戳引用展示、保存待办、下载并解析可编辑 DOCX/ICS、
+Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出、无 JavaScript 页面错误。
+浏览器验证使用真实本地 Chroma 与离线演示模型；截图和报告保存在本机 `outputs/m2-browser-8cbe865f/`，未纳入 Git。
 这些结果仅验证软件行为，不是 ASR 或纪要质量评测。
 
 ## 路线图与限制
@@ -123,10 +202,13 @@ GitHub Actions 在 Python 3.10、3.12、3.14 上运行 lint、格式检查、离
 | 里程碑 | 状态与范围 |
 |---|---|
 | M1 | 已实现 CLI、ASR 接口及 faster-whisper、GPT 兼容调用、结构化校验与重试、JSON/Markdown、离线示例、测试及 CI 配置 |
-| M2 | 待实现 Agent 工具调用、待办和日历工具、历史会议混合检索 RAG、FastAPI 与 Web 界面 |
+| M2 | 已实现 Agent 工具循环、SQLite 待办、ICS/Markdown/DOCX、Chroma + BM25 RAG、带引用问答、FastAPI、Web 工作台与离线演示；验证与限制见本文 |
 | M3 | 待建设有授权的评测集、CER/行动项 F1/召回率等真实评测、bad case、MCP Server、Docker 和演示材料 |
 
-README 和 CI 按本次要求提前到 M1。说话人分离、实时音频、长会议分块、任务外部写入、
-DOCX 导出均未实现。没有声称任何模型准确率、性能或质量指标，单元测试通过不代表模型效果。
+README 和 CI 按要求提前到 M1。说话人分离、实时音频、长会议摘要分块和任务外部写入仍未实现。
+历史检索分块已实现，但纪要生成仍受 `MAX_TRANSCRIPT_CHARS` 限制。
+没有声称任何模型准确率、性能或质量指标，单元测试通过不代表模型效果。
+
+未执行真实 ASR、付费聊天或 embedding 调用；未在 GitHub 远端执行 CI。
 
 MIT License。

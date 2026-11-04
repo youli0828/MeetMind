@@ -20,6 +20,9 @@ class Settings(Model):
     asr_device: str = "cpu"
     asr_compute_type: str = "int8"
     asr_language: str | None = None
+    embedding_model: str = "text-embedding-3-small"
+    data_dir: str = "outputs/server"
+    demo_mode: bool = False
 
     @classmethod
     def load(cls, env_file: Path = Path(".env")) -> "Settings":
@@ -36,6 +39,9 @@ class Settings(Model):
             "ASR_DEVICE": "asr_device",
             "ASR_COMPUTE_TYPE": "asr_compute_type",
             "ASR_LANGUAGE": "asr_language",
+            "EMBEDDING_MODEL": "embedding_model",
+            "MEETMIND_DATA_DIR": "data_dir",
+            "MEETMIND_DEMO": "demo_mode",
         }
         data = {field: values[key] for key, field in mapping.items() if values.get(key)}
         return cls.model_validate(data, strict=False)

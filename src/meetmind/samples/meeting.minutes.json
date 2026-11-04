@@ -1,0 +1,13 @@
+{
+  "title": "试用版发布讨论",
+  "summary": "会议讨论试用版发布范围，决定先发布命令行版本、后续再做网页界面。陈负责安装说明，错误案例的负责人和时间尚未确定。",
+  "topics": [
+    {"title": "发布范围", "discussion": "先发布命令行版本，网页界面留待后续。", "source_segment_ids": [0]},
+    {"title": "发布准备", "discussion": "整理安装说明并补充错误案例。", "source_segment_ids": [1, 2]}
+  ],
+  "decisions": [{"text": "先发布命令行版本，网页界面以后再做。", "source_segment_ids": [0]}],
+  "action_items": [
+    {"task": "整理安装说明", "owner": "陈", "due": "下周五前", "source_segment_ids": [1]},
+    {"task": "补充错误案例", "owner": null, "due": null, "source_segment_ids": [2]}
+  ]
+}

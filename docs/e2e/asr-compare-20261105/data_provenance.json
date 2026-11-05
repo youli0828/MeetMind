@@ -1,0 +1,134 @@
+{
+  "url": "https://speech-lab-share-data.oss-cn-shanghai.aliyuncs.com/AliMeeting/openlr/Eval_Ali.tar.gz",
+  "archive_sha256": "dc47343b2474b5ebcf458927e878155f6ddeb59c85e685b3645c32a1f9578d92",
+  "members": [
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_far/textgrid_dir/R8001_M8004.TextGrid",
+      "local": "data/external/alimeeting/R8001_M8004.TextGrid"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/audio_dir/R8001_M8004_N_SPK8013.wav",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8013.wav"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/audio_dir/R8001_M8004_N_SPK8014.wav",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8014.wav"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/audio_dir/R8001_M8004_N_SPK8015.wav",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8015.wav"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/audio_dir/R8001_M8004_N_SPK8016.wav",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8016.wav"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/textgrid_dir/R8001_M8004_N_SPK8013.TextGrid",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8013.TextGrid"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/textgrid_dir/R8001_M8004_N_SPK8014.TextGrid",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8014.TextGrid"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/textgrid_dir/R8001_M8004_N_SPK8015.TextGrid",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8015.TextGrid"
+    },
+    {
+      "archive_member": "Eval_Ali/Eval_Ali_near/textgrid_dir/R8001_M8004_N_SPK8016.TextGrid",
+      "local": "data/external/alimeeting/R8001_M8004_N_SPK8016.TextGrid"
+    }
+  ],
+  "license": "CC BY-SA 4.0",
+  "attribution": "Alibaba Group / AliMeeting (Yu et al., ICASSP 2022)",
+  "near": {
+    "clip": "data/external/alimeeting/R8001_M8004.headset-mean.first300s.wav",
+    "sha256": "5642d9d3003e6e24a0ec4937e8a412faf2825870529df45f888c00e94ab9ed15",
+    "headsets": [
+      {
+        "file": "data/external/alimeeting/R8001_M8004_N_SPK8013.wav",
+        "first300s_pcm_sha256": "895007f20b66f5a7abceda18e3b5eecc4409f43419f09afcc11eb2377f56449a"
+      },
+      {
+        "file": "data/external/alimeeting/R8001_M8004_N_SPK8014.wav",
+        "first300s_pcm_sha256": "895dfc1faac301360c7158eed724a222e82eecca79e468e4da520174ddabbe0c"
+      },
+      {
+        "file": "data/external/alimeeting/R8001_M8004_N_SPK8015.wav",
+        "first300s_pcm_sha256": "31ca148a91dff7ef5d6fa74139ae2065ff1efc326f721d728c057c8770ec14fa"
+      },
+      {
+        "file": "data/external/alimeeting/R8001_M8004_N_SPK8016.wav",
+        "first300s_pcm_sha256": "1c61399818af890365a6ad98734647aa524e4265814224f9fa6c6c126dab6867"
+      }
+    ],
+    "transformation": "First 300 seconds at original time origin; arithmetic mean of all participant headset PCM16 channels, rounded to PCM16. No peak normalization, time shift or oracle speaker selection."
+  },
+  "far": {
+    "source_url": "https://speech-lab-share-data.oss-cn-shanghai.aliyuncs.com/AliMeeting/openlr/Eval_Ali.tar.gz",
+    "source_page": "https://www.openslr.org/119/",
+    "license": "CC BY-SA 4.0",
+    "attribution": "Alibaba Group / AliMeeting (Yu et al., ICASSP 2022)",
+    "archive_member": "Eval_Ali/Eval_Ali_far/audio_dir/R8001_M8004_MS801.wav",
+    "transformation": "First 300 seconds, channel index 0, PCM16 mono 16kHz",
+    "downloaded_bytes": 67108864,
+    "download_wall_seconds": 208.3293029000015,
+    "audio_seconds": 300,
+    "sha256": "123c057c80145117cf5efa3d2c985447fdbd48504e33f5ad6bc773e26844e8ff",
+    "clip": "data/external/alimeeting/R8001_M8004_MS801.ch0.first300s.wav"
+  },
+  "baseline_official_reference_checks": [
+    {
+      "sample_id": "R8001_M8004_00006900_00018290",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00018730_00022430",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00024960_00035740",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00083780_00097280",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00186340_00198320",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00209440_00217590",
+      "official_exact_match": true
+    },
+    {
+      "sample_id": "R8001_M8004_00218620_00225650",
+      "official_exact_match": true
+    }
+  ],
+  "near_far_annotation_alignment": [
+    {
+      "speaker": "N_SPK8013",
+      "intervals": 277,
+      "near_far_annotations_identical": true
+    },
+    {
+      "speaker": "N_SPK8014",
+      "intervals": 85,
+      "near_far_annotations_identical": true
+    },
+    {
+      "speaker": "N_SPK8015",
+      "intervals": 154,
+      "near_far_annotations_identical": true
+    },
+    {
+      "speaker": "N_SPK8016",
+      "intervals": 88,
+      "near_far_annotations_identical": true
+    }
+  ],
+  "expanded_reference_characters": 393,
+  "expanded_reference_audio_seconds": 75.44999999999999
+}

@@ -1,0 +1,201 @@
+{
+  "status": "completed",
+  "audio_seconds": 300,
+  "device": "cpu",
+  "compute_type": "int8",
+  "timing_scope": "ASR import + initialization + continuous 300s decode; excludes downloads and CER scoring",
+  "rows": [
+    {
+      "model": "base",
+      "condition": "far",
+      "status": "completed",
+      "metrics_file": "base-far/metrics.json",
+      "wall_seconds": 17.91235630000301,
+      "rtf": 0.05970785433334337,
+      "continuous_peak_working_set_bytes": 489758720,
+      "cer_subset": {
+        "cer": 0.5843023255813954,
+        "edit_distance": 201,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.544529262086514,
+        "edit_distance": 214,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.7065420560747664,
+        "edit_distance": 1134,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "base",
+      "condition": "near",
+      "status": "completed",
+      "metrics_file": "base-near/metrics.json",
+      "wall_seconds": 23.8926180999988,
+      "rtf": 0.07964206033332934,
+      "continuous_peak_working_set_bytes": 546848768,
+      "cer_subset": {
+        "cer": 0.3633720930232558,
+        "edit_distance": 125,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.3333333333333333,
+        "edit_distance": 131,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.3177570093457944,
+        "edit_distance": 510,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "small",
+      "condition": "far",
+      "status": "completed",
+      "metrics_file": "small-far/metrics.json",
+      "wall_seconds": 58.08985240000038,
+      "rtf": 0.1936328413333346,
+      "continuous_peak_working_set_bytes": 770588672,
+      "cer_subset": {
+        "cer": 0.45058139534883723,
+        "edit_distance": 155,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.41475826972010177,
+        "edit_distance": 163,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.5171339563862928,
+        "edit_distance": 830,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "small",
+      "condition": "near",
+      "status": "completed",
+      "metrics_file": "small-near/metrics.json",
+      "wall_seconds": 70.78937819998828,
+      "rtf": 0.23596459399996092,
+      "continuous_peak_working_set_bytes": 770039808,
+      "cer_subset": {
+        "cer": 0.3430232558139535,
+        "edit_distance": 118,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.31806615776081426,
+        "edit_distance": 125,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.30093457943925234,
+        "edit_distance": 483,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "medium",
+      "condition": "far",
+      "status": "completed",
+      "metrics_file": "medium-far/metrics.json",
+      "wall_seconds": 134.61894360001315,
+      "rtf": 0.44872981200004386,
+      "continuous_peak_working_set_bytes": 1868611584,
+      "cer_subset": {
+        "cer": 0.3953488372093023,
+        "edit_distance": 136,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.356234096692112,
+        "edit_distance": 140,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.4635514018691589,
+        "edit_distance": 744,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "medium",
+      "condition": "near",
+      "status": "completed",
+      "metrics_file": "medium-near/metrics.json",
+      "wall_seconds": 159.15690920001362,
+      "rtf": 0.530523030666712,
+      "continuous_peak_working_set_bytes": 1868926976,
+      "cer_subset": {
+        "cer": 0.2819767441860465,
+        "edit_distance": 97,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.26208651399491095,
+        "edit_distance": 103,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.29781931464174455,
+        "edit_distance": 478,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "large-v3-turbo",
+      "condition": "far",
+      "status": "completed",
+      "metrics_file": "large-v3-turbo-far/metrics.json",
+      "wall_seconds": 99.97522290000052,
+      "rtf": 0.33325074300000174,
+      "continuous_peak_working_set_bytes": 2015002624,
+      "cer_subset": {
+        "cer": 0.4127906976744186,
+        "edit_distance": 142,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.37150127226463103,
+        "edit_distance": 146,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.4454828660436137,
+        "edit_distance": 715,
+        "reference_characters": 1605
+      }
+    },
+    {
+      "model": "large-v3-turbo",
+      "condition": "near",
+      "status": "completed",
+      "metrics_file": "large-v3-turbo-near/metrics.json",
+      "wall_seconds": 112.82372929999838,
+      "rtf": 0.37607909766666126,
+      "continuous_peak_working_set_bytes": 2015039488,
+      "cer_subset": {
+        "cer": 0.29651162790697677,
+        "edit_distance": 102,
+        "reference_characters": 344
+      },
+      "cer_expanded": {
+        "cer": 0.2697201017811705,
+        "edit_distance": 106,
+        "reference_characters": 393
+      },
+      "cer_long_prefix": {
+        "cer": 0.2641744548286604,
+        "edit_distance": 424,
+        "reference_characters": 1605
+      }
+    }
+  ]
+}

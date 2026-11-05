@@ -1,0 +1,803 @@
+{
+  "language": "zh",
+  "segments": [
+    {
+      "id": 0,
+      "start": 6.86,
+      "end": 12.86,
+      "text": "今天就是能公司新出的一款手机产品进行一家编码会",
+      "speaker": null
+    },
+    {
+      "id": 1,
+      "start": 12.86,
+      "end": 18.86,
+      "text": "首先咱们确定一下产品的目标客户群这一块",
+      "speaker": null
+    },
+    {
+      "id": 2,
+      "start": 18.86,
+      "end": 20.86,
+      "text": "首先谈大家一个看吧",
+      "speaker": null
+    },
+    {
+      "id": 3,
+      "start": 20.86,
+      "end": 24.86,
+      "text": "你也谈一下吧",
+      "speaker": null
+    },
+    {
+      "id": 4,
+      "start": 24.86,
+      "end": 28.86,
+      "text": "我觉得咱这个目标人群不用那么确定",
+      "speaker": null
+    },
+    {
+      "id": 5,
+      "start": 28.86,
+      "end": 33.86,
+      "text": "然后基本上就是让它什么也什么也的人群都可以",
+      "speaker": null
+    },
+    {
+      "id": 6,
+      "start": 33.86,
+      "end": 35.86,
+      "text": "这样咱们的面比较果胖",
+      "speaker": null
+    },
+    {
+      "id": 7,
+      "start": 35.86,
+      "end": 39.86,
+      "text": "因为咱们这个手机现在基本上外观设计的比较时尚",
+      "speaker": null
+    },
+    {
+      "id": 8,
+      "start": 39.86,
+      "end": 44.86,
+      "text": "所以我觉得其实不用界定于老年人或者年轻人之间",
+      "speaker": null
+    },
+    {
+      "id": 9,
+      "start": 44.86,
+      "end": 45.86,
+      "text": "就跨了大一点是吧",
+      "speaker": null
+    },
+    {
+      "id": 10,
+      "start": 45.86,
+      "end": 46.86,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 11,
+      "start": 46.86,
+      "end": 48.86,
+      "text": "这样我觉得范围更广一些",
+      "speaker": null
+    },
+    {
+      "id": 12,
+      "start": 48.86,
+      "end": 50.86,
+      "text": "就什么样的人群都可以选择吗",
+      "speaker": null
+    },
+    {
+      "id": 13,
+      "start": 50.86,
+      "end": 51.86,
+      "text": "好",
+      "speaker": null
+    },
+    {
+      "id": 14,
+      "start": 51.86,
+      "end": 53.86,
+      "text": "我觉得是要有针对性的",
+      "speaker": null
+    },
+    {
+      "id": 15,
+      "start": 53.86,
+      "end": 57.86,
+      "text": "我觉得咱们的设计外观还是很时尚",
+      "speaker": null
+    },
+    {
+      "id": 16,
+      "start": 57.86,
+      "end": 63.86,
+      "text": "还是需要去设定一下比较适合的年龄段",
+      "speaker": null
+    },
+    {
+      "id": 17,
+      "start": 63.86,
+      "end": 65.86,
+      "text": "比方说有彩色的呀",
+      "speaker": null
+    },
+    {
+      "id": 18,
+      "start": 65.86,
+      "end": 66.86,
+      "text": "比方说有彩色的呀",
+      "speaker": null
+    },
+    {
+      "id": 19,
+      "start": 66.86,
+      "end": 67.86,
+      "text": "有蓝色的黄色的",
+      "speaker": null
+    },
+    {
+      "id": 20,
+      "start": 67.86,
+      "end": 69.86,
+      "text": "年老年人就不可能用这种",
+      "speaker": null
+    },
+    {
+      "id": 21,
+      "start": 69.86,
+      "end": 70.86,
+      "text": "也可以说是有功能",
+      "speaker": null
+    },
+    {
+      "id": 22,
+      "start": 70.86,
+      "end": 72.86,
+      "text": "对而且你现在设计的产品",
+      "speaker": null
+    },
+    {
+      "id": 23,
+      "start": 72.86,
+      "end": 75.86,
+      "text": "主要推出的是它有照相的功能",
+      "speaker": null
+    },
+    {
+      "id": 24,
+      "start": 75.86,
+      "end": 78.86,
+      "text": "功能的话是很很好",
+      "speaker": null
+    },
+    {
+      "id": 25,
+      "start": 78.86,
+      "end": 82.86,
+      "text": "所以还是适合年轻的人群",
+      "speaker": null
+    },
+    {
+      "id": 26,
+      "start": 82.86,
+      "end": 88.86,
+      "text": "我感觉可以根据年龄和不同的人士做一下区分",
+      "speaker": null
+    },
+    {
+      "id": 27,
+      "start": 88.86,
+      "end": 96.86,
+      "text": "我感觉我们可以主要是十八到四十五岁的中青年人群吧",
+      "speaker": null
+    },
+    {
+      "id": 28,
+      "start": 96.86,
+      "end": 99.86,
+      "text": "我想咱们就确定这个手机就在从这个测试来说",
+      "speaker": null
+    },
+    {
+      "id": 29,
+      "start": 99.86,
+      "end": 102.86,
+      "text": "可能就是说年轻段也快要大一点",
+      "speaker": null
+    },
+    {
+      "id": 30,
+      "start": 102.86,
+      "end": 103.86,
+      "text": "对吧",
+      "speaker": null
+    },
+    {
+      "id": 31,
+      "start": 103.86,
+      "end": 104.86,
+      "text": "但是我觉得吧",
+      "speaker": null
+    },
+    {
+      "id": 32,
+      "start": 104.86,
+      "end": 106.86,
+      "text": "就是现在那个老年人也都很时尚",
+      "speaker": null
+    },
+    {
+      "id": 33,
+      "start": 106.86,
+      "end": 107.86,
+      "text": "现在老年人出去",
+      "speaker": null
+    },
+    {
+      "id": 34,
+      "start": 107.86,
+      "end": 110.86,
+      "text": "然后他基本上那个把自己装住了",
+      "speaker": null
+    },
+    {
+      "id": 35,
+      "start": 110.86,
+      "end": 111.86,
+      "text": "然后都是大粉大红",
+      "speaker": null
+    },
+    {
+      "id": 36,
+      "start": 111.86,
+      "end": 113.86,
+      "text": "然后他很喜欢那种那种特别亮",
+      "speaker": null
+    },
+    {
+      "id": 37,
+      "start": 113.86,
+      "end": 114.86,
+      "text": "有个年轻的年轻感",
+      "speaker": null
+    },
+    {
+      "id": 38,
+      "start": 114.86,
+      "end": 115.86,
+      "text": "就是年轻版是吧",
+      "speaker": null
+    },
+    {
+      "id": 39,
+      "start": 115.86,
+      "end": 118.86,
+      "text": "但是现在这个版本的话",
+      "speaker": null
+    },
+    {
+      "id": 40,
+      "start": 118.86,
+      "end": 119.86,
+      "text": "它是不是不适合老年人的",
+      "speaker": null
+    },
+    {
+      "id": 41,
+      "start": 119.86,
+      "end": 121.86,
+      "text": "你有一些功能",
+      "speaker": null
+    },
+    {
+      "id": 42,
+      "start": 121.86,
+      "end": 122.86,
+      "text": "像老年人的话",
+      "speaker": null
+    },
+    {
+      "id": 43,
+      "start": 122.86,
+      "end": 124.86,
+      "text": "他需要很多的大字体",
+      "speaker": null
+    },
+    {
+      "id": 44,
+      "start": 124.86,
+      "end": 127.86,
+      "text": "或者是一些网络上的东西",
+      "speaker": null
+    },
+    {
+      "id": 45,
+      "start": 127.86,
+      "end": 128.86,
+      "text": "老年人根本就操作不了",
+      "speaker": null
+    },
+    {
+      "id": 46,
+      "start": 128.86,
+      "end": 129.86,
+      "text": "它操作不了",
+      "speaker": null
+    },
+    {
+      "id": 47,
+      "start": 129.86,
+      "end": 130.86,
+      "text": "它操作不了",
+      "speaker": null
+    },
+    {
+      "id": 48,
+      "start": 130.86,
+      "end": 131.86,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 49,
+      "start": 131.86,
+      "end": 133.86,
+      "text": "它的那个规格还是不一样的",
+      "speaker": null
+    },
+    {
+      "id": 50,
+      "start": 133.86,
+      "end": 134.86,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 51,
+      "start": 134.86,
+      "end": 135.86,
+      "text": "有些",
+      "speaker": null
+    },
+    {
+      "id": 52,
+      "start": 135.86,
+      "end": 139.37,
+      "text": "手机里边的很多这个也在去射的",
+      "speaker": null
+    },
+    {
+      "id": 53,
+      "start": 139.37,
+      "end": 140.37,
+      "text": "然后",
+      "speaker": null
+    },
+    {
+      "id": 54,
+      "start": 140.37,
+      "end": 141.37,
+      "text": "然后",
+      "speaker": null
+    },
+    {
+      "id": 55,
+      "start": 141.37,
+      "end": 142.37,
+      "text": "而且我觉得现在老年人",
+      "speaker": null
+    },
+    {
+      "id": 56,
+      "start": 142.37,
+      "end": 144.37,
+      "text": "也不是所有的老年人",
+      "speaker": null
+    },
+    {
+      "id": 57,
+      "start": 144.37,
+      "end": 146.37,
+      "text": "都是那种就是眼一眼花",
+      "speaker": null
+    },
+    {
+      "id": 58,
+      "start": 146.37,
+      "end": 147.37,
+      "text": "或者什么什么的情况",
+      "speaker": null
+    },
+    {
+      "id": 59,
+      "start": 147.37,
+      "end": 148.37,
+      "text": "所以我觉得吧",
+      "speaker": null
+    },
+    {
+      "id": 60,
+      "start": 148.37,
+      "end": 151.37,
+      "text": "就是不用把这个借鉴弄得那么分明",
+      "speaker": null
+    },
+    {
+      "id": 61,
+      "start": 151.37,
+      "end": 152.37,
+      "text": "然后基本上能适应它",
+      "speaker": null
+    },
+    {
+      "id": 62,
+      "start": 152.37,
+      "end": 155.37,
+      "text": "然后能去使用它的老年人",
+      "speaker": null
+    },
+    {
+      "id": 63,
+      "start": 155.37,
+      "end": 156.37,
+      "text": "都还可以",
+      "speaker": null
+    },
+    {
+      "id": 64,
+      "start": 156.37,
+      "end": 158.37,
+      "text": "但是我觉得还是有这类型的好啊",
+      "speaker": null
+    },
+    {
+      "id": 65,
+      "start": 158.37,
+      "end": 160.37,
+      "text": "你现在买不买手机的话",
+      "speaker": null
+    },
+    {
+      "id": 66,
+      "start": 160.37,
+      "end": 162.37,
+      "text": "它不一定都是说老年人自己去买",
+      "speaker": null
+    },
+    {
+      "id": 67,
+      "start": 162.37,
+      "end": 163.37,
+      "text": "老年人根本就不会看",
+      "speaker": null
+    },
+    {
+      "id": 68,
+      "start": 163.37,
+      "end": 166.37,
+      "text": "一般都是容易给家长去买",
+      "speaker": null
+    },
+    {
+      "id": 69,
+      "start": 166.37,
+      "end": 169.37,
+      "text": "他会不查里面的一些功能什么的",
+      "speaker": null
+    },
+    {
+      "id": 70,
+      "start": 169.37,
+      "end": 171.37,
+      "text": "你会去选择",
+      "speaker": null
+    },
+    {
+      "id": 71,
+      "start": 171.37,
+      "end": 174.37,
+      "text": "我感觉我们可以根据就是不同的人群",
+      "speaker": null
+    },
+    {
+      "id": 72,
+      "start": 174.37,
+      "end": 176.37,
+      "text": "所谓做一下差别设计",
+      "speaker": null
+    },
+    {
+      "id": 73,
+      "start": 176.37,
+      "end": 178.37,
+      "text": "你像如果老年人用的话",
+      "speaker": null
+    },
+    {
+      "id": 74,
+      "start": 178.37,
+      "end": 179.37,
+      "text": "可以就是皮质稍微低一点",
+      "speaker": null
+    },
+    {
+      "id": 75,
+      "start": 179.37,
+      "end": 181.37,
+      "text": "就是自己或者身体稍微大一点",
+      "speaker": null
+    },
+    {
+      "id": 76,
+      "start": 181.37,
+      "end": 182.37,
+      "text": "年轻人用的话",
+      "speaker": null
+    },
+    {
+      "id": 77,
+      "start": 182.37,
+      "end": 184.37,
+      "text": "就可能颜色选择性多点",
+      "speaker": null
+    },
+    {
+      "id": 78,
+      "start": 184.37,
+      "end": 185.37,
+      "text": "皮质高点这种",
+      "speaker": null
+    },
+    {
+      "id": 79,
+      "start": 185.37,
+      "end": 188.74,
+      "text": "那个",
+      "speaker": null
+    },
+    {
+      "id": 80,
+      "start": 188.74,
+      "end": 210.77,
+      "text": "那个",
+      "speaker": null
+    },
+    {
+      "id": 81,
+      "start": 210.77,
+      "end": 212.77,
+      "text": "后面再定一下这个",
+      "speaker": null
+    },
+    {
+      "id": 82,
+      "start": 212.77,
+      "end": 213.77,
+      "text": "就是",
+      "speaker": null
+    },
+    {
+      "id": 83,
+      "start": 213.77,
+      "end": 214.77,
+      "text": "就是",
+      "speaker": null
+    },
+    {
+      "id": 84,
+      "start": 214.77,
+      "end": 215.77,
+      "text": "我们之间的色彩原色",
+      "speaker": null
+    },
+    {
+      "id": 85,
+      "start": 215.77,
+      "end": 216.77,
+      "text": "反正都是确定一下这个颜色",
+      "speaker": null
+    },
+    {
+      "id": 86,
+      "start": 216.77,
+      "end": 217.77,
+      "text": "好吗",
+      "speaker": null
+    },
+    {
+      "id": 87,
+      "start": 217.77,
+      "end": 219.77,
+      "text": "首先能说这个",
+      "speaker": null
+    },
+    {
+      "id": 88,
+      "start": 219.77,
+      "end": 220.77,
+      "text": "粗糙方式这一块",
+      "speaker": null
+    },
+    {
+      "id": 89,
+      "start": 220.77,
+      "end": 221.77,
+      "text": "大家觉得这个",
+      "speaker": null
+    },
+    {
+      "id": 90,
+      "start": 221.77,
+      "end": 223.77,
+      "text": "以什么样的粗糙方式",
+      "speaker": null
+    },
+    {
+      "id": 91,
+      "start": 223.77,
+      "end": 225.77,
+      "text": "从粗糙会应该好一些",
+      "speaker": null
+    },
+    {
+      "id": 92,
+      "start": 225.77,
+      "end": 228.77,
+      "text": "我感觉可以现在通过比较热门的直播带货",
+      "speaker": null
+    },
+    {
+      "id": 93,
+      "start": 228.77,
+      "end": 229.77,
+      "text": "然后",
+      "speaker": null
+    },
+    {
+      "id": 94,
+      "start": 229.77,
+      "end": 232.77,
+      "text": "不是麻烦就电商双十一吗",
+      "speaker": null
+    },
+    {
+      "id": 95,
+      "start": 232.77,
+      "end": 234.77,
+      "text": "这种活动我们都可以多参与一下",
+      "speaker": null
+    },
+    {
+      "id": 96,
+      "start": 234.77,
+      "end": 236.77,
+      "text": "就各大电商平台什么的",
+      "speaker": null
+    },
+    {
+      "id": 97,
+      "start": 236.77,
+      "end": 238.77,
+      "text": "天猫 速宁 淘宝 拼多多",
+      "speaker": null
+    },
+    {
+      "id": 98,
+      "start": 238.77,
+      "end": 239.77,
+      "text": "都不用压力",
+      "speaker": null
+    },
+    {
+      "id": 99,
+      "start": 239.77,
+      "end": 244.04,
+      "text": "我们前期主要是就是",
+      "speaker": null
+    },
+    {
+      "id": 100,
+      "start": 244.04,
+      "end": 246.04,
+      "text": "价钱可以",
+      "speaker": null
+    },
+    {
+      "id": 101,
+      "start": 246.04,
+      "end": 247.04,
+      "text": "就让利一些",
+      "speaker": null
+    },
+    {
+      "id": 102,
+      "start": 247.04,
+      "end": 248.04,
+      "text": "多占领一些市场份额",
+      "speaker": null
+    },
+    {
+      "id": 103,
+      "start": 248.04,
+      "end": 250.04,
+      "text": "等市场份额",
+      "speaker": null
+    },
+    {
+      "id": 104,
+      "start": 250.04,
+      "end": 252.04,
+      "text": "慢慢做到之后就可以",
+      "speaker": null
+    },
+    {
+      "id": 105,
+      "start": 252.04,
+      "end": 253.04,
+      "text": "就是价钱稍微高点",
+      "speaker": null
+    },
+    {
+      "id": 106,
+      "start": 253.04,
+      "end": 286.38,
+      "text": "我感觉低推这个不太适合手机吧",
+      "speaker": null
+    },
+    {
+      "id": 107,
+      "start": 286.38,
+      "end": 289.38,
+      "text": "手机好像一般就是有门店这种",
+      "speaker": null
+    },
+    {
+      "id": 108,
+      "start": 289.38,
+      "end": 290.38,
+      "text": "或者就是",
+      "speaker": null
+    },
+    {
+      "id": 109,
+      "start": 290.38,
+      "end": 291.38,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 110,
+      "start": 291.38,
+      "end": 292.38,
+      "text": "好",
+      "speaker": null
+    },
+    {
+      "id": 111,
+      "start": 292.38,
+      "end": 305.38,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 112,
+      "start": 305.38,
+      "end": 306.38,
+      "text": "对",
+      "speaker": null
+    },
+    {
+      "id": 113,
+      "start": 306.38,
+      "end": 307.38,
+      "text": "好",
+      "speaker": null
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "verified_utc": "2026-11-05T05:14:43.529120+00:00",
+  "status": "passed",
+  "completed_conditions": 8,
+  "skipped_models": [],
+  "checks": [
+    "base-far: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "base-near: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "small-far: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "small-near: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "medium-far: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "medium-near: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "large-v3-turbo-far: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "large-v3-turbo-near: audio/model/reference hashes, CER arithmetic, RTF verified",
+    "Four headset PCM hashes, near/far annotation alignment and arithmetic-mean mix verified",
+    "Preserved base-far continuous transcript matches historical transcript text",
+    "README comparison table exactly matches generated table"
+  ],
+  "commands": [
+    {
+      "command": [
+        ".venv/Scripts/ruff.exe",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "stdout": "\u001b[1;32mAll checks passed!\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/Scripts/ruff.exe",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "stdout": "47 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        ".venv/Scripts/python.exe",
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "........................................................................ [ 83%]\n..............                                                           [100%]\n============================== warnings summary ===============================\ntests/test_m2.py::test_actual_chroma_persistence_offline\n  D:\\个人相关\\个人项目\\MeetMind\\.venv\\Lib\\site-packages\\chromadb\\telemetry\\opentelemetry\\__init__.py:128: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead\n    if asyncio.iscoroutinefunction(f):\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n86 passed, 1 warning in 2.86s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "command": [
+        "git",
+        "check-ignore",
+        "data/external/alimeeting/R8001_M8004.headset-mean.first300s.wav",
+        "data/external/faster-whisper-large-v3-turbo/model.bin"
+      ],
+      "exit_code": 0,
+      "stdout": "data/external/alimeeting/R8001_M8004.headset-mean.first300s.wav\ndata/external/faster-whisper-large-v3-turbo/model.bin\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "ls-files",
+        "*.wav",
+        "*.mp3",
+        "*.m4a",
+        "*.flac",
+        "*.bin",
+        "*.safetensors",
+        "*.pt"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "notes": [
+    "base-far, base-near and small-far reused without rerunning",
+    "No git commit or push performed",
+    "One existing Chroma/Python 3.14 deprecation warning in pytest"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "source": "data/external/alimeeting/R8001_M8004.TextGrid",
+  "source_sha256": "e5fe941174fe4140bb5923b7caf2cbdd68d8d2a86086e4f00c68afc90d09dbad",
+  "method": "All complete lexical intervals in official far-field TextGrid within 0..300s that do not overlap any other lexical interval; independently decoded. Same boundaries and texts for both acoustic conditions. No continuous-300s CER and no speaker-order ambiguity from overlap.",
+  "reference_characters": 393,
+  "reference_audio_seconds": 75.44999999999999,
+  "excerpts": [
+    {
+      "sample_id": "official-000",
+      "start": 6.9,
+      "end": 18.29,
+      "reference": "好嗯，咱们今天针对咱们公司新出产的新出的一款这个手机啊产品啊，进行一下这个研讨会首先咱们确认一下咱们这个产品的目标，这个人群客户群这一块儿。",
+      "speaker": "N_SPK8013"
+    },
+    {
+      "sample_id": "official-001",
+      "start": 18.73,
+      "end": 22.43,
+      "reference": "嗯，首先谈一下大家伙的一个看法啊嗯，那。",
+      "speaker": "N_SPK8013"
+    },
+    {
+      "sample_id": "official-004",
+      "start": 24.96,
+      "end": 35.74,
+      "reference": "我觉得咱们这个这个目标人群可以不不用定的那么确定，然后基本上就是，嗯，让他什么什么类的人群，然后都可以这样呢咱们的面儿比较广。",
+      "speaker": "N_SPK8014"
+    },
+    {
+      "sample_id": "official-005",
+      "start": 36.35,
+      "end": 45.1,
+      "reference": "嗯，因为咱们这个手机现在基本上外观设计得比较时尚，所以我觉得其实，嗯，不用界定于这个老年人或者年轻人之间。",
+      "speaker": "N_SPK8014"
+    },
+    {
+      "sample_id": "official-016",
+      "start": 83.78,
+      "end": 97.28,
+      "reference": "我感觉可以根据年龄，呃和这这种就是不同的人士做一下区分，呃我感觉我们可以主要针对就是嗯十八到四十五之岁的中青年人人群嘛。",
+      "speaker": "N_SPK8016"
+    },
+    {
+      "sample_id": "official-041",
+      "start": 186.34,
+      "end": 198.32,
+      "reference": "啊好可以可以反正这个，就是跨度反正不就，不用特别大，从年轻人来说，咱们主单主持年轻年轻化这一块儿吧，年轻人这一块儿，好吧，什么十八到三。",
+      "speaker": "N_SPK8013"
+    },
+    {
+      "sample_id": "official-048",
+      "start": 208.53,
+      "end": 208.7,
+      "reference": "我。",
+      "speaker": "N_SPK8013"
+    },
+    {
+      "sample_id": "official-049",
+      "start": 209.44,
+      "end": 217.59,
+      "reference": "那咱们这个，后续再定一下这个就是十八到五十岁之间的色彩颜色啊，咱们到时候确认一下这个颜色好吧。",
+      "speaker": "N_SPK8013"
+    },
+    {
+      "sample_id": "official-050",
+      "start": 218.62,
+      "end": 225.65,
+      "reference": "首先咱们说这个，促销方式这一块儿，大家觉得这个，以什么样的这个促销方式进行促销会觉得好一些。",
+      "speaker": "N_SPK8013"
+    }
+  ]
+}

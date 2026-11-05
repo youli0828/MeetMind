@@ -1,0 +1,12 @@
+{
+  "model": "large-v3-turbo",
+  "condition": "far",
+  "stage": "continuous_decode_before_any_result",
+  "status": "failed_then_retried",
+  "error_type": "ValueError",
+  "error": "Invalid input features shape: expected an input with shape (1, 128, 3000), but got an input with shape (1, 80, 3000) instead",
+  "cause": "Download file allowlist omitted the pinned model repository's preprocessor_config.json, so faster-whisper used its default 80-bin feature extractor.",
+  "resolution": "Included preprocessor_config.json in downloader, downloaded it from the same pinned revision, and verified file length and Git blob SHA-1 against cached repository metadata before retrying in a fresh process.",
+  "measured_performance": null,
+  "note": "No completed decode or CER existed from this attempt; failure is excluded from comparison timing. Existing base/small/medium results were preserved."
+}

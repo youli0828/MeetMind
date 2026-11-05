@@ -142,7 +142,9 @@ def create_app() -> FastAPI:
         if Settings.load().demo_mode:
             raise MeetMindError("Offline demo accepts only the bundled transcript, not audio")
         settings = Settings.load()
-        with TemporaryDirectory() as directory:
+        uploads = Path(settings.data_dir) / "uploads"
+        uploads.mkdir(parents=True, exist_ok=True)
+        with TemporaryDirectory(dir=uploads) as directory:
             path = Path(directory) / ("audio" + extension)
             path.write_bytes(data)
             transcript = FasterWhisperASR(settings).transcribe(path)

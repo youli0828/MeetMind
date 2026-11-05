@@ -306,12 +306,14 @@ def test_api_hides_upstream_secrets(client, service):
     assert "secret-token" not in response.text
 
 
-def test_audio_uses_injected_asr_and_cleans_temp(client, monkeypatch, transcript):
+def test_audio_uses_injected_asr_and_cleans_temp(client, monkeypatch, transcript, tmp_path):
     monkeypatch.delenv("MEETMIND_DEMO", raising=False)
+    monkeypatch.setenv("MEETMIND_DATA_DIR", str(tmp_path))
     paths = []
 
     def transcribe(self, path):
         assert path.read_bytes() == b"fake audio"
+        assert path.is_relative_to(tmp_path / "uploads")
         paths.append(path)
         return transcript
 

@@ -11,6 +11,8 @@ build/
 dist/
 outputs/
 data/external/
+data/
+models/
 .coverage
 htmlcov/
 *.wav

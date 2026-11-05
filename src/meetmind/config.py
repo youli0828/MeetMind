@@ -26,7 +26,6 @@ class Settings(Model):
 
     @classmethod
     def load(cls, env_file: Path = Path(".env")) -> "Settings":
-        values = {**dotenv_values(env_file), **os.environ}
         mapping = {
             "OPENAI_API_KEY": "api_key",
             "OPENAI_BASE_URL": "base_url",
@@ -42,6 +41,12 @@ class Settings(Model):
             "EMBEDDING_MODEL": "embedding_model",
             "MEETMIND_DATA_DIR": "data_dir",
             "MEETMIND_DEMO": "demo_mode",
+            "LLM_API_KEY": "api_key",
+            "LLM_BASE_URL": "base_url",
+            "LLM_MODEL": "model",
+            "WHISPER_MODEL": "asr_model",
         }
-        data = {field: values[key] for key, field in mapping.items() if values.get(key)}
+        data = {}
+        for values in (dotenv_values(env_file), os.environ):
+            data.update({field: values[key] for key, field in mapping.items() if values.get(key)})
         return cls.model_validate(data, strict=False)

@@ -18,6 +18,7 @@ dependencies = [
   "chromadb>=1.0,<2",
   "rank-bm25>=0.2.2,<1",
   "python-docx>=1.1,<2",
+  "mcp>=1.12,<2",
 ]
 
 [project.optional-dependencies]
@@ -26,6 +27,7 @@ dev = ["pytest>=8,<10", "ruff>=0.9,<1", "httpx>=0.28,<1"]
 
 [project.scripts]
 meetmind = "meetmind.cli:main"
+meetmind-mcp = "meetmind.mcp_server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/meetmind"]

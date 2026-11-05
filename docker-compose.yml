@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - .env
+    environment:
+      MEETMIND_DATA_DIR: /app/data
+      HF_HOME: /models/huggingface
+    volumes:
+      - ./data:/app/data
+      - whisper-cache:/models
+
+volumes:
+  whisper-cache:

@@ -1,6 +1,6 @@
 # MeetMind
 
-按 [设计 v2](docs/design-v2.md) 实现 M1 + M2：音频转纪要、Agent 工具调用、带时间戳引用的历史会议混合检索问答，以及 FastAPI/Web 工作台。
+按 [设计 v2](docs/design-v2.md) 实现 M1 + M2 + M3：音频转纪要、Agent 工具调用、带时间戳引用的历史会议混合检索问答、FastAPI/Web 工作台、MCP 和 Docker 部署。
 
 ## 架构
 
@@ -27,6 +27,11 @@ flowchart LR
     API --> AG[有轮次上限的 Tool Calling Agent]
     AG --> TO[搜索 / 读取会议 / 待办 / ICS / Markdown / DOCX]
     TO --> DB[SQLite 会议、待办与下载文件]
+    MC[Cursor / Claude Desktop] --> MCP[MCP stdio / SSE]
+    MCP --> TO
+    MCP --> M
+    DK[Docker API + Web] --> API
+    DK --> VOL[data 挂载 / Whisper 缓存卷]
 ```
 
 `src/meetmind/asr/` 定义转写接口和本地实现；`summarize/` 定义纪要接口、提示词和客户端；
@@ -58,6 +63,66 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 无语音或无效录音会失败，不生成虚构转写。模型运行环境及 GPU 依赖参见
 [faster-whisper 官方说明](https://github.com/SYSTRAN/faster-whisper#usage)。
 
+## Docker：三步启动
+
+1. 首次创建配置：Linux/macOS 执行 `cp -n .env.example .env`；PowerShell 执行
+   `if (!(Test-Path .env)) { Copy-Item .env.example .env }`。已有 `.env` 直接沿用。
+2. 编辑本机 `.env`：填写 `LLM_BASE_URL`、`LLM_API_KEY`、`LLM_MODEL`、`WHISPER_MODEL`
+   （旧 `OPENAI_*` / `ASR_MODEL` 仍有效），并确认 `EMBEDDING_MODEL` 可由同一服务调用。
+   只看离线 demo 时设 `MEETMIND_DEMO=1`，无需密钥或模型下载。
+3. 执行 `docker compose up --build -d`，打开 `http://localhost:8000`；
+   用 `curl http://localhost:8000/health` 检查进程存活。
+
+API 与 Web 由同一进程提供，宿主端口只绑定本机。`./data` 挂载到 `/app/data`，保存 SQLite、
+Chroma 和上传临时目录 `uploads/`；原始上传音频在转写后清理，不作为永久归档。
+Compose 固定容器数据目录，不受旧 `.env` 中宿主路径影响。首次转写音频时才下载 Whisper 权重，
+保存在命名卷 `whisper-cache` 的 `/models/huggingface`，重建容器可复用；镜像不含权重。
+需要镜像源时在 `.env` 添加 `HF_ENDPOINT=https://hf-mirror.com`，重建容器配置后生效。
+也可将本地权重目录另行挂载并把 `WHISPER_MODEL` 指向容器内路径。
+`docker compose logs -f api` 查看日志，`docker compose down` 停止服务并保留数据卷。
+`/health` 不检查 LLM、embedding 或权重下载是否可用。
+
+## MCP：Cursor / Claude Desktop
+
+安装 `pip install -e ".[dev]"` 后，`meetmind-mcp` 或 `python -m meetmind.mcp_server`
+默认使用 stdio。实现使用[官方 MCP Python SDK v1](https://py.sdk.modelcontextprotocol.io/v1/)，
+依赖固定为 `mcp<2`。工具复用 Web/Agent 的 `Tools.call`、混合检索和服务初始化；
+注册及启动不会提前连接模型或加载 Chroma，首次调用才初始化服务。
+
+将下列 `mcp.json` 内容用于 Cursor 的 `.cursor/mcp.json`，或合并到 Claude Desktop 的
+`claude_desktop_config.json`。把两处 `D:/projects/MeetMind` 替换为实际仓库绝对路径；
+Linux/macOS 将 Python 改为 `.venv/bin/python` 的绝对路径。
+`--directory` 指定现有 `.env` 和相对数据目录的工作目录，密钥保留在本机 `.env` 中。
+
+```json
+{
+  "mcpServers": {
+    "meetmind": {
+      "command": "D:/projects/MeetMind/.venv/Scripts/python.exe",
+      "args": ["-m", "meetmind.mcp_server", "--directory", "D:/projects/MeetMind"]
+    }
+  }
+}
+```
+
+| MCP 工具 | 参数与行为 |
+|---|---|
+| `search_meetings` | `query`、`k=5`（1–10）；返回 `sources`，含会议 ID、原文、分段 ID 和 `start/end` 秒数 |
+| `get_meeting_summary` | `meeting_id`；读取已保存的纪要、决策与行动项，不重新生成摘要 |
+| `create_todo` | `meeting_id`、`action_index`（从 0 开始）；保存既有行动项，幂等 |
+| `create_calendar_event` | `meeting_id`、`title`、`start`、`end`；时间需带明确时区偏移，生成 ICS |
+| `export_markdown` | `meeting_id`；导出纪要与带时间戳转写 |
+
+演示：先按上文启动离线 Web 工作台并导入虚构示例，让 MCP 使用同一
+`MEETMIND_DATA_DIR` 和 `MEETMIND_DEMO=1`，然后在客户端要求“搜索预算相关会议”，
+用返回的 `meeting_id` 获取摘要，再明确要求保存第一个行动项或导出 Markdown。
+返回的 `/artifacts/...` 为相对下载地址；使用相同数据目录的 Web 服务可在
+`http://localhost:8000/artifacts/...` 下载。ICS 仅生成文件，不写入外部日历。
+
+可选 SSE：`meetmind-mcp --transport sse --host 127.0.0.1 --port 8001`，
+客户端连接 `http://127.0.0.1:8001/sse`。SSE 服务独立于 Web 的 8000 端口；
+默认本机使用，无认证。stdio 客户端会启动子进程，请勿将普通日志写入 stdout。
+
 ## 配置与数据流
 
 `.env` 默认从当前工作目录读取，或用 `--env-file path/to/.env` 指定；系统环境变量优先。
@@ -68,11 +133,13 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 | `OPENAI_API_KEY` | 必填，仅真实 LLM 调用需要 |
 | `OPENAI_BASE_URL` | `https://api.openai.com/v1`，可改兼容服务 |
 | `OPENAI_MODEL` | `gpt-4o-mini`，可按服务支持情况修改 |
+| `LLM_API_KEY` / `LLM_BASE_URL` / `LLM_MODEL` | 对应上述三个旧名称；同一来源内非空新名称优先，系统环境始终优先于 `.env` |
 | `LLM_RESPONSE_FORMAT` | `json_schema`；兼容服务可显式改为 `json_object` 或 `text` |
 | `LLM_TIMEOUT_SECONDS` | `60`，单次请求超时 |
 | `LLM_MAX_ATTEMPTS` | `3`，结构化结果校验尝试上限 |
 | `MAX_TRANSCRIPT_CHARS` | `60000`，发送的转写 JSON 字符数上限，超过则报错 |
 | `ASR_MODEL` | `small`，模型名称或本地路径 |
+| `WHISPER_MODEL` | `ASR_MODEL` 的兼容别名，优先规则同上 |
 | `ASR_DEVICE` / `ASR_COMPUTE_TYPE` | `cpu` / `int8` |
 | `ASR_LANGUAGE` | 留空自动识别，或指定 `zh` / `en` 等 |
 | `EMBEDDING_MODEL` | `text-embedding-3-small`；与聊天共用 API key/base URL，服务须支持 embeddings |
@@ -176,6 +243,11 @@ API 测试通过[FastAPI 依赖覆盖](https://github.com/fastapi/fastapi/blob/m
 
 ## 开发与验证
 
+M3 本机验证：`pytest -q` **104 passed**（1 条既有 Chroma 弃用警告），
+`ruff check .`、`ruff format --check .` 和 `pip check` 均通过；
+官方 SDK stdio 客户端已完成握手、列出工具，并在临时离线 SQLite/Chroma 数据上调用全部五个工具。
+本机未安装 Docker，未执行本地镜像构建；GitHub Actions 新增独立 `docker build` 步骤，不推送镜像。
+
 ```powershell
 & .\.venv\Scripts\ruff.exe check .
 & .\.venv\Scripts\ruff.exe format --check .
@@ -203,7 +275,7 @@ Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出
 |---|---|
 | M1 | 已实现 CLI、ASR 接口及 faster-whisper、GPT 兼容调用、结构化校验与重试、JSON/Markdown、离线示例、测试及 CI 配置 |
 | M2 | 已实现 Agent 工具循环、SQLite 待办、ICS/Markdown/DOCX、Chroma + BM25 RAG、带引用问答、FastAPI、Web 工作台与离线演示；验证与限制见本文 |
-| M3 | 待建设有授权的评测集、CER/行动项 F1/召回率等真实评测、bad case、MCP Server、Docker 和演示材料 |
+| M3 | 已实现 MCP stdio/SSE、Docker/Compose、CI 镜像构建、真实 CER 对比与远场 bad case；检索 recall@k、行动项 F1：TODO / later |
 
 README 和 CI 按要求提前到 M1。说话人分离、实时音频、长会议摘要分块和任务外部写入仍未实现。
 历史检索分块已实现，但纪要生成仍受 `MAX_TRANSCRIPT_CHARS` 限制。
@@ -213,7 +285,7 @@ README 和 CI 按要求提前到 M1。说话人分离、实时音频、长会议
 
 MIT License。
 
-## ??????
+## 真实端到端评测
 
 真实端到端评测（2026-11-05，北京时间）：使用
 [AliMeeting / OpenSLR 119](https://www.openslr.org/119/) 的
@@ -281,6 +353,20 @@ turbo 比 medium 快，但主子集 CER 略高。长前缀上 turbo 的近、远
 本轮 `ruff check .`、`ruff format --check .` 均通过，`pytest -q` 为 **86 passed**
 （1 条既有依赖弃用警告）；[核验记录](docs/e2e/asr-compare-20261105/verification.json)
 保存实际输出及数据检查结果。未执行 git commit 或 push。
+
+### 远场 bad case（已有实测摘录）
+
+以下均直接来自 [base-far/metrics.json](docs/e2e/asr-compare-20261105/base-far/metrics.json)
+的 `cer_subset.excerpts`，为独立裁切解码的原始结果，未做繁简转换或人工修正。
+参考与衍生文本沿用 AliMeeting 的 CC BY-SA 4.0，署名 Alibaba Group / Yu et al., ICASSP 2022。
+
+| 时间（秒） | 官方参考 | base 远场识别 |
+|---|---|---|
+| 6.90–18.29 | 好嗯，咱们今天针对咱们公司新出产的新出的一款这个手机啊产品啊，进行一下这个研讨会首先咱们确认一下咱们这个产品的目标，这个人群客户群这一块儿。 | 好 等於今天就是能夠自信出場聽出一款用的產品今天一家編號會我再讓大家去看一下產品的目標這個人群 扣群那一款 |
+| 18.73–22.43 | 嗯，首先谈一下大家伙的一个看法啊嗯，那。 | 我今天還跟大家補一個套 |
+
+两例存在内容替换和漏词，错误会传递到下游纪要；来源 ID 和 Schema 校验无法纠正识别内容。
+检索 recall@k、行动项 F1、完整数据集 CER/WER：**TODO / later**，尚未实测。
 
 ### 历史端到端评测复现
 

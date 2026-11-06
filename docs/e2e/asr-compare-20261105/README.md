@@ -33,9 +33,8 @@ turbo 为 41.28% / 29.65%，但完整转写用时 99.98 / 112.82 秒，低于 me
 
 最终核验：八组音频、权重和参考哈希、逐段编辑距离、CER 汇总、RTF、耳麦混合及
 近远场标注对齐均通过；README 表格与自动生成表格完全一致。
-`ruff check .`、`ruff format --check .`、`git diff --check` 均通过，`pytest -q` 为
-**86 passed**（1 条既有 Chroma / Python 3.14 弃用警告）。音频和权重已忽略，未执行 commit/push。
-实际检查命令和输出见 [verification.json](verification.json)。
+该轮实际检查命令和输出见 [verification.json](verification.json)；
+当前测试总数统一见[主 README](../../../README.md#开发与验证)。音频和权重保持忽略。
 
 ## 测量口径
 

@@ -1,0 +1,37 @@
+{
+  "labeling": "人工阅读既有转写，选取可定位的主题问题；行动项只标注文本明确提出的后续工作，建议语气保留，不推测负责人和日期。未重新调用模型。",
+  "k": [1, 2, 3],
+  "meetings": [
+    {
+      "id": "sample-release",
+      "transcript": "src/meetmind/samples/meeting.transcript.json",
+      "predictions": "src/meetmind/samples/meeting.minutes.json",
+      "prediction_kind": "hand_authored_demo_control",
+      "action_items": [
+        {"task": "整理安装说明", "owner": "陈", "due": "下周五前", "source_segment_ids": [1]},
+        {"task": "补充错误案例", "owner": null, "due": null, "source_segment_ids": [2]}
+      ]
+    },
+    {
+      "id": "alimeeting-base",
+      "transcript": "docs/e2e/alimeeting-20261105-base-rerun/transcript.json",
+      "predictions": "docs/e2e/alimeeting-20261105-base-rerun/minutes.json",
+      "prediction_kind": "saved_live_glm_4_flash",
+      "action_items": [
+        {"task": "根据不同年龄人群差别设计产品", "owner": null, "due": null, "source_segment_ids": [78, 79, 80, 81, 84, 85]},
+        {"task": "多参与直播带货和电商平台活动", "owner": null, "due": null, "source_segment_ids": [87, 88, 89, 90, 91, 92]},
+        {"task": "前期低价扩大市场份额，之后调高价钱收益", "owner": null, "due": null, "source_segment_ids": [93, 94, 95, 96, 97, 98]}
+      ]
+    }
+  ],
+  "queries": [
+    {"id": "q1", "query": "试用版先发布什么版本？", "relevant": [{"meeting_id": "sample-release", "segment_id": 0}]},
+    {"id": "q2", "query": "谁整理安装说明，什么时候完成？", "relevant": [{"meeting_id": "sample-release", "segment_id": 1}]},
+    {"id": "q3", "query": "错误案例由谁补充？", "relevant": [{"meeting_id": "sample-release", "segment_id": 2}]},
+    {"id": "q4", "query": "网页界面什么时候做？", "relevant": [{"meeting_id": "sample-release", "segment_id": 0}]},
+    {"id": "q5", "query": "不同年龄人群如何差别设计？", "relevant": [{"meeting_id": "alimeeting-base", "segment_id": 80}, {"meeting_id": "alimeeting-base", "segment_id": 85}]},
+    {"id": "q6", "query": "直播带货和电商平台活动如何参与？", "relevant": [{"meeting_id": "alimeeting-base", "segment_id": 88}, {"meeting_id": "alimeeting-base", "segment_id": 90}]},
+    {"id": "q7", "query": "价钱和市场份额有什么关系？", "relevant": [{"meeting_id": "alimeeting-base", "segment_id": 94}, {"meeting_id": "alimeeting-base", "segment_id": 95}, {"meeting_id": "alimeeting-base", "segment_id": 98}]},
+    {"id": "q8", "query": "年轻人用的产品颜色怎么选？", "relevant": [{"meeting_id": "alimeeting-base", "segment_id": 84}, {"meeting_id": "alimeeting-base", "segment_id": 85}]}
+  ]
+}

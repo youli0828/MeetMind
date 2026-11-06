@@ -18,7 +18,7 @@ def test_local_adapter_maps_timestamps_and_consumes_generator(monkeypatch, tmp_p
     monkeypatch.setitem(sys.modules, "faster_whisper", SimpleNamespace(WhisperModel=constructor))
     audio = tmp_path / "speech.wav"
     result = FasterWhisperASR(Settings(asr_language="en")).transcribe(audio)
-    constructor.assert_called_once_with("small", device="cpu", compute_type="int8")
+    constructor.assert_called_once_with("medium", device="cpu", compute_type="int8")
     model.transcribe.assert_called_once_with(str(audio), language="en", vad_filter=True)
     assert result.segments[0].start == 1.25
     assert result.segments[0].end == 2.75

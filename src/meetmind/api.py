@@ -13,6 +13,7 @@ from pydantic import Field
 from meetmind.asr.faster_whisper import FasterWhisperASR
 from meetmind.config import Settings
 from meetmind.errors import MeetMindError
+from meetmind.health import dependency_health
 from meetmind.llm import ModelClient
 from meetmind.models import Minutes, Model, Transcript
 from meetmind.retrieval import HybridRetriever
@@ -106,7 +107,12 @@ def create_app() -> FastAPI:
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "demo": Settings.load().demo_mode}
+        settings = Settings.load()
+        report = dependency_health(settings)
+        return JSONResponse(
+            status_code=503 if settings.health_deep and report["status"] != "ok" else 200,
+            content=report,
+        )
 
     @app.get("/sample")
     def sample():

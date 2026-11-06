@@ -16,13 +16,14 @@ class Settings(Model):
     timeout_seconds: float = Field(default=60, gt=0)
     max_attempts: int = Field(default=3, ge=1, le=10)
     max_transcript_chars: int = Field(default=60000, ge=1)
-    asr_model: str = "small"
+    asr_model: str = "medium"
     asr_device: str = "cpu"
     asr_compute_type: str = "int8"
     asr_language: str | None = None
     embedding_model: str = "text-embedding-3-small"
     data_dir: str = "outputs/server"
     demo_mode: bool = False
+    health_deep: bool = False
 
     @classmethod
     def load(cls, env_file: Path = Path(".env")) -> "Settings":
@@ -41,6 +42,7 @@ class Settings(Model):
             "EMBEDDING_MODEL": "embedding_model",
             "MEETMIND_DATA_DIR": "data_dir",
             "MEETMIND_DEMO": "demo_mode",
+            "MEETMIND_HEALTH_DEEP": "health_deep",
             "LLM_API_KEY": "api_key",
             "LLM_BASE_URL": "base_url",
             "LLM_MODEL": "model",

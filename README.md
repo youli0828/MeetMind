@@ -60,6 +60,10 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 
 首次本地 ASR 使用会下载模型权重，需要网络和磁盘空间；`ASR_MODEL` 可以设为已下载的本地模型目录。
 默认 CPU / int8，语言自动识别；支持音频格式取决于 faster-whisper 的音频解码器。
+默认模型为 `medium`，仍可通过 `ASR_MODEL` / `WHISPER_MODEL` 覆盖。选择依据是
+[既有实测](docs/e2e/asr-compare-20261105/README.md)的主参考子集：近场 CER **28.20%**、
+远场 **39.53%**，均低于 small；代价是本机 CPU/int8 的近场/远场 RTF 从 small 的
+0.236/0.194 升至 medium 的 0.531/0.449。仅代表该会话子集，完整 CER 表及限制见文末。
 无语音或无效录音会失败，不生成虚构转写。模型运行环境及 GPU 依赖参见
 [faster-whisper 官方说明](https://github.com/SYSTRAN/faster-whisper#usage)。
 
@@ -80,7 +84,12 @@ Compose 固定容器数据目录，不受旧 `.env` 中宿主路径影响。首�
 需要镜像源时在 `.env` 添加 `HF_ENDPOINT=https://hf-mirror.com`，重建容器配置后生效。
 也可将本地权重目录另行挂载并把 `WHISPER_MODEL` 指向容器内路径。
 `docker compose logs -f api` 查看日志，`docker compose down` 停止服务并保留数据卷。
-`/health` 不检查 LLM、embedding 或权重下载是否可用。
+`/health` 默认返回进程存活 200，并报告 LLM、embedding、ASR 的配置是否齐全，不访问外部服务。
+`ready` 在默认模式只表示配置齐全，不保证依赖可用。设置 `MEETMIND_HEALTH_DEEP=1` 后，
+对配置的聊天和 embedding 模型各发一次最小请求（每次超时 3 秒、不重试，可能产生费用），
+ASR 只检查可选包及配置目录的 `model.bin`，不加载模型或下载权重；模型名或缓存未解析时报告
+`weights_unverified`。深度检查任一依赖缺失、不可用或未验证时返回 503；普通检查仍为 200。
+离线 demo 标为 `demo_bypass`，不探测线上依赖。响应不包含密钥、服务地址或上游错误正文。
 
 ## MCP：Cursor / Claude Desktop
 
@@ -138,13 +147,14 @@ Linux/macOS 将 Python 改为 `.venv/bin/python` 的绝对路径。
 | `LLM_TIMEOUT_SECONDS` | `60`，单次请求超时 |
 | `LLM_MAX_ATTEMPTS` | `3`，结构化结果校验尝试上限 |
 | `MAX_TRANSCRIPT_CHARS` | `60000`，发送的转写 JSON 字符数上限，超过则报错 |
-| `ASR_MODEL` | `small`，模型名称或本地路径 |
+| `ASR_MODEL` | `medium`，模型名称或本地路径；质量与 RTF 取舍见上文 |
 | `WHISPER_MODEL` | `ASR_MODEL` 的兼容别名，优先规则同上 |
 | `ASR_DEVICE` / `ASR_COMPUTE_TYPE` | `cpu` / `int8` |
 | `ASR_LANGUAGE` | 留空自动识别，或指定 `zh` / `en` 等 |
 | `EMBEDDING_MODEL` | `text-embedding-3-small`；与聊天共用 API key/base URL，服务须支持 embeddings |
 | `MEETMIND_DATA_DIR` | `outputs/server`，服务器的 SQLite 与 Chroma 数据目录 |
 | `MEETMIND_DEMO` | `0`；设为 `1` 使用明确标记的离线演示实现 |
+| `MEETMIND_HEALTH_DEEP` | `0`；设为 `1` 启用有超时限制的依赖探测，不可用时 `/health` 返回 503 |
 
 使用官方 Python SDK 的 Chat Completions 接口。默认向服务传递严格 JSON Schema，
 并在本地再次校验字段类型及来源分段 ID；兼容模式也执行同样的本地校验。
@@ -236,17 +246,17 @@ API 文档在 `http://127.0.0.1:8000/docs`：
 | `POST /chat` | `{message, history?: [{role: user/assistant, content}]}`；SSE 事件流 |
 | `POST /tools` | `{name, arguments}`；`get_meeting/create_todo/create_calendar_event/export_markdown/export_docx/search_meetings` |
 | `GET /todos`、`GET /artifacts/{id}` | 已保存待办和生成文件下载 |
-| `GET /health`、`GET /sample` | 存活/演示模式、虚构输入样例（health 不检查模型服务可用性） |
+| `GET /health`、`GET /sample` | 存活与依赖配置/可选深度探测、虚构输入样例 |
 
 Chroma 的接口用法参考[官方 Python API](https://docs.trychroma.com/reference/python)，
 API 测试通过[FastAPI 依赖覆盖](https://github.com/fastapi/fastapi/blob/master/docs/en/docs/advanced/testing-dependencies.md)注入离线服务。
 
 ## 开发与验证
 
-M3 本机验证：`pytest -q` **104 passed**（1 条既有 Chroma 弃用警告），
+本机最新验证（2026-11-06）：`pytest -q` **118 passed**（1 条既有 Chroma 弃用警告），
 `ruff check .`、`ruff format --check .` 和 `pip check` 均通过；
 官方 SDK stdio 客户端已完成握手、列出工具，并在临时离线 SQLite/Chroma 数据上调用全部五个工具。
-本机未安装 Docker，未执行本地镜像构建；GitHub Actions 新增独立 `docker build` 步骤，不推送镜像。
+本机未执行镜像构建；GitHub Actions 运行独立 `docker build` 作业，不推送镜像。
 
 ```powershell
 & .\.venv\Scripts\ruff.exe check .
@@ -257,14 +267,11 @@ M3 本机验证：`pytest -q` **104 passed**（1 条既有 Chroma 弃用警告�
 测试不需要网络、密钥或 ASR 权重：保留 M1 全部覆盖，并增加工具参数与日历转义、待办幂等、
 混合检索与引用、Agent 多轮与上限、API/SSE、模拟音频上传、下载文件解析、SQLite/真实 Chroma 重启读取。
 普通网络连接被测试夹具阻断；Windows asyncio 内部 socketpair 是唯一受限豁免。
-GitHub Actions 在 Python 3.10、3.12、3.14 上运行 lint、格式检查、离线测试与 demo；
-工作流已写好，尚未在 GitHub 远端执行。
+GitHub Actions 已在远端运行，覆盖 Python 3.10、3.12、3.14 的 lint、格式检查、离线测试与 demo，
+以及独立 Docker 构建作业；最新状态见 [Actions](https://github.com/youli0828/MeetMind/actions)。
 
-本次本地验证（Windows，`D:\python\python.exe`，Python 3.14.7）：
-`ruff check .`、`ruff format --check .`、`pip check` 均通过，`pytest -q` 为 **76 passed**
-（包含原有 37 项；1 条 Chroma 依赖内部的 Python 3.14 弃用警告）。
-CLI 离线 demo、wheel 构建与包内 Web/样例资源检查通过。
-本机 Edge 浏览器实测通过：虚构示例导入、时间戳引用展示、保存待办、下载并解析可编辑 DOCX/ICS、
+历史验证中 CLI 离线 demo、wheel 构建与包内 Web/样例资源检查通过。
+历史本机 Edge 浏览器实测通过：虚构示例导入、时间戳引用展示、保存待办、下载并解析可编辑 DOCX/ICS、
 Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出、无 JavaScript 页面错误。
 浏览器验证使用真实本地 Chroma 与离线演示模型；截图和报告保存在本机 `outputs/m2-browser-8cbe865f/`，未纳入 Git。
 这些结果仅验证软件行为，不是 ASR 或纪要质量评测。
@@ -275,13 +282,13 @@ Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出
 |---|---|
 | M1 | 已实现 CLI、ASR 接口及 faster-whisper、GPT 兼容调用、结构化校验与重试、JSON/Markdown、离线示例、测试及 CI 配置 |
 | M2 | 已实现 Agent 工具循环、SQLite 待办、ICS/Markdown/DOCX、Chroma + BM25 RAG、带引用问答、FastAPI、Web 工作台与离线演示；验证与限制见本文 |
-| M3 | 已实现 MCP stdio/SSE、Docker/Compose、CI 镜像构建、真实 CER 对比与远场 bad case；检索 recall@k、行动项 F1：TODO / later |
+| M3 | 已实现 MCP stdio/SSE、Docker/Compose、CI 镜像构建、真实 CER 对比与远场 bad case；[小型业务评测](docs/e2e/business-eval/README.md)：离线 Recall@1/@2/@3=1.000（2 块/8 问）；已保存真实纪要 token 集合 F1=0.6437、严格行动项集合 F1=0（单场/3 项）。线上 embedding 召回与大样本评测仍 TODO |
 
-README 和 CI 按要求提前到 M1。说话人分离、实时音频、长会议摘要分块和任务外部写入仍未实现。
+说话人分离（diarization）、实时音频、长会议摘要分块和任务外部写入仍未实现。
 历史检索分块已实现，但纪要生成仍受 `MAX_TRANSCRIPT_CHARS` 限制。
 单元测试通过不代表模型效果；文末实测指标仅代表指定样本和配置。
 
-初始交付未执行真实 ASR、聊天或 embedding 调用；本次实测另见下文。未在 GitHub 远端执行 CI。
+历史真实 ASR、聊天及 embedding 调用结果见下文；离线业务指标与适用范围见[业务评测](docs/e2e/business-eval/README.md)。
 
 MIT License。
 
@@ -350,9 +357,8 @@ turbo 比 medium 快，但主子集 CER 略高。长前缀上 turbo 的近、远
 [比较报告](docs/e2e/asr-compare-20261105/README.md)、
 [完整表格](docs/e2e/asr-compare-20261105/comparison.md) 和
 [汇总 JSON](docs/e2e/asr-compare-20261105/summary.json)。
-本轮 `ruff check .`、`ruff format --check .` 均通过，`pytest -q` 为 **86 passed**
-（1 条既有依赖弃用警告）；[核验记录](docs/e2e/asr-compare-20261105/verification.json)
-保存实际输出及数据检查结果。未执行 git commit 或 push。
+该轮[核验记录](docs/e2e/asr-compare-20261105/verification.json)保存历史实际输出及数据检查结果；
+当前测试总数统一见上文“开发与验证”。
 
 ### 远场 bad case（已有实测摘录）
 
@@ -366,7 +372,8 @@ turbo 比 medium 快，但主子集 CER 略高。长前缀上 turbo 的近、远
 | 18.73–22.43 | 嗯，首先谈一下大家伙的一个看法啊嗯，那。 | 我今天還跟大家補一個套 |
 
 两例存在内容替换和漏词，错误会传递到下游纪要；来源 ID 和 Schema 校验无法纠正识别内容。
-检索 recall@k、行动项 F1、完整数据集 CER/WER：**TODO / later**，尚未实测。
+检索与行动项的小型离线实测见[业务评测](docs/e2e/business-eval/README.md)；
+线上 embedding Recall@k、大样本行动项 F1、完整数据集 CER/WER：**TODO / later**。
 
 ### 历史端到端评测复现
 
@@ -386,7 +393,6 @@ $env:HF_HUB_DISABLE_XET = "1"
 首次运行遇到 faster-whisper 1.2.1 / PyAV 19.0.2 解码参数不兼容，失败记录保留于
 [首次运行目录](docs/e2e/alimeeting-20261105-base/metrics.json)。ASR 依赖已限制 `av<19`，
 以上结果来自 PyAV 18.1.0 重跑。HF 镜像下载间歇超时，最终补齐权重且完整哈希通过。
-AMI 此前下载曾超时，本轮跳过英语评测。未执行 git commit 或 push。
-实测后 `ruff check .`、`ruff format --check .`、`pip check` 均通过，
-`pytest -q` 为 **76 passed**（1 条 Chroma 依赖弃用警告）；
-检查记录见 [verification.json](docs/e2e/alimeeting-20261105-base-rerun/verification.json)。
+AMI 此前下载曾超时，该轮跳过英语评测。
+历史检查记录见 [verification.json](docs/e2e/alimeeting-20261105-base-rerun/verification.json)，
+当前测试总数统一见上文“开发与验证”。

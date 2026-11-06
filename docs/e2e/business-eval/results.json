@@ -1,0 +1,168 @@
+{
+  "mode": "offline_hash_embeddings_saved_minutes",
+  "versions": {
+    "python": "3.14.7",
+    "chromadb": "1.5.9"
+  },
+  "gold_sha256": "d2da5360d5ff27d73eaff137fcdbffabb04eed6e4d79293c7cba6a938f537d43",
+  "input_sha256": {
+    "src/meetmind/samples/meeting.transcript.json": "d637957a811993e5fe4e327352b77c13a9bde1fa4d77e306a5c55ba1f9dd391e",
+    "src/meetmind/samples/meeting.minutes.json": "4c513ddc937ed39f77a58223eb08413a7d38c6f3d29f091edc3d420f76c4acbb",
+    "docs/e2e/alimeeting-20261105-base-rerun/transcript.json": "becbd44ea154db4889000dc4ca2eb44f6f85022d3ece0b428250882d7b1239ce",
+    "docs/e2e/alimeeting-20261105-base-rerun/minutes.json": "94ec1460ea2813eb5909f21d561390c8d1687a99066c2dfc2f8317f30a89ace3"
+  },
+  "retrieval": {
+    "meeting_count": 2,
+    "chunk_count": 2,
+    "query_count": 8,
+    "recall_at_k": {
+      "1": 1.0,
+      "2": 1.0,
+      "3": 1.0
+    },
+    "queries": [
+      {
+        "id": "q1",
+        "returned_chunk_ids": [
+          "sample-release:0",
+          "alimeeting-base:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q2",
+        "returned_chunk_ids": [
+          "sample-release:0",
+          "alimeeting-base:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q3",
+        "returned_chunk_ids": [
+          "sample-release:0",
+          "alimeeting-base:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q4",
+        "returned_chunk_ids": [
+          "sample-release:0",
+          "alimeeting-base:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q5",
+        "returned_chunk_ids": [
+          "alimeeting-base:0",
+          "sample-release:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q6",
+        "returned_chunk_ids": [
+          "alimeeting-base:0",
+          "sample-release:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q7",
+        "returned_chunk_ids": [
+          "alimeeting-base:0",
+          "sample-release:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      },
+      {
+        "id": "q8",
+        "returned_chunk_ids": [
+          "alimeeting-base:0",
+          "sample-release:0"
+        ],
+        "recall": {
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0
+        }
+      }
+    ]
+  },
+  "action_items": [
+    {
+      "meeting_id": "sample-release",
+      "prediction_kind": "hand_authored_demo_control",
+      "predicted_items": 2,
+      "gold_items": 2,
+      "field_token_set": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "overlap": 17,
+        "predicted": 17,
+        "gold": 17
+      },
+      "exact_item_set": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "overlap": 2,
+        "predicted": 2,
+        "gold": 2
+      }
+    },
+    {
+      "meeting_id": "alimeeting-base",
+      "prediction_kind": "saved_live_glm_4_flash",
+      "predicted_items": 3,
+      "gold_items": 3,
+      "field_token_set": {
+        "precision": 0.6666666666666666,
+        "recall": 0.6222222222222222,
+        "f1": 0.6436781609195402,
+        "overlap": 28,
+        "predicted": 42,
+        "gold": 45
+      },
+      "exact_item_set": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "overlap": 0,
+        "predicted": 3,
+        "gold": 3
+      }
+    }
+  ]
+}

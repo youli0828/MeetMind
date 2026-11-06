@@ -14,7 +14,7 @@ Schema/来源校验 1 次通过，结构重试 0、传输重试 0；索引和问
 问：“这段会议讨论了哪些主要问题？请依据原文回答。”
 答：“会议讨论了手机设计、目标人群、产品功能、市场定位、年龄适应性以及不同年龄段用户的需求差异等问题。”
 引用为 00:06.860–04:50.300（分段 0–106），原文和时间核对通过。
-本次转写只形成 1 个检索块，未评估多会议排序或召回率。
+该次转写只形成 1 个检索块，未评估多会议排序或召回率；新增小型离线对照见[业务评测](business-eval/README.md)。
 
 [局部参考评分](alimeeting-20261105-base-rerun/cer_subset.json)为
 **CER 58.43%（201/344）**，覆盖 7 段、66.53 秒。
@@ -23,12 +23,12 @@ Schema/来源校验 1 次通过，结构重试 0、传输重试 0；索引和问
 
 坏例：开场参考讨论“公司新出的一款手机产品”，ASR 却转写成“新规管理的主席”，
 纪要随后生成同名议题。该问题说明转写错误会传递到纪要，Schema 合法不代表语义正确。
-未人工修正模型输出，未计算纪要事实准确率、行动项 F1 或检索召回率。
+该次未人工修正模型输出，未计算纪要事实准确率；保存的纪要已纳入后续[业务评测](business-eval/README.md)，
+报告行动项 token/set F1 和离线检索召回率，并说明单场真实会议及哈希 embedding 的限制。
 
-实测后 `ruff check .`、`ruff format --check .`、`pip check` 均通过；
-`pytest -q` 为 76 passed，1 条 Chroma 依赖弃用警告。
-详见 [verification.json](alimeeting-20261105-base-rerun/verification.json)。
-已核对 `docs/e2e/` 不含音频，文本输出未包含 `.env` 中的 API 密钥；未 commit 或 push。
+历史检查输出见 [verification.json](alimeeting-20261105-base-rerun/verification.json)；
+当前测试总数统一见[主 README](../../README.md#开发与验证)。
+`docs/e2e/` 只保存文本与脚本，不提交音频、权重或密钥。
 
 ## 数据与许可
 

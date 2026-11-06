@@ -16,6 +16,10 @@ class Settings(Model):
     timeout_seconds: float = Field(default=60, gt=0)
     max_attempts: int = Field(default=3, ge=1, le=10)
     max_transcript_chars: int = Field(default=60000, ge=1)
+    summarize_chunk_chars: int | None = Field(default=None, ge=1)
+    summarize_chunk_overlap_segs: int = Field(default=2, ge=0)
+    diarization: bool = False
+    huggingface_token: SecretStr = SecretStr("")
     asr_model: str = "medium"
     asr_device: str = "cpu"
     asr_compute_type: str = "int8"
@@ -35,6 +39,11 @@ class Settings(Model):
             "LLM_TIMEOUT_SECONDS": "timeout_seconds",
             "LLM_MAX_ATTEMPTS": "max_attempts",
             "MAX_TRANSCRIPT_CHARS": "max_transcript_chars",
+            "SUMMARIZE_CHUNK_CHARS": "summarize_chunk_chars",
+            "SUMMARIZE_CHUNK_OVERLAP_SEGS": "summarize_chunk_overlap_segs",
+            "DIARIZATION": "diarization",
+            "HF_TOKEN": "huggingface_token",
+            "HUGGINGFACE_TOKEN": "huggingface_token",
             "ASR_MODEL": "asr_model",
             "ASR_DEVICE": "asr_device",
             "ASR_COMPUTE_TYPE": "asr_compute_type",

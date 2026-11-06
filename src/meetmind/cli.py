@@ -41,7 +41,7 @@ def main(argv: list[str] | None = None) -> int:
             if not args.input.is_file():
                 raise MeetMindError("Input file does not exist")
             settings = Settings.load(args.env_file)
-            summarizer = OpenAISummarizer(settings)
+            summarizer = OpenAISummarizer(settings, artifacts_dir=output / "chunks")
             if args.command == "run":
                 run_audio(args.input, output, FasterWhisperASR(settings), summarizer)
             else:

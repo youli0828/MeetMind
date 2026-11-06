@@ -1,13 +1,15 @@
 from pathlib import Path
 
+from meetmind.asr.diarization import DiarizationBackend, PyannoteBackend, assign_speakers
 from meetmind.config import Settings
 from meetmind.errors import MeetMindError
 from meetmind.models import Segment, Transcript
 
 
 class FasterWhisperASR:
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings, *, diarizer: DiarizationBackend | None = None):
         self.settings = settings
+        self.diarizer = diarizer
 
     def transcribe(self, audio: Path) -> Transcript:
         try:
@@ -30,4 +32,8 @@ class FasterWhisperASR:
         ]
         if not result:
             raise MeetMindError("No speech detected in audio")
-        return Transcript(language=info.language, segments=result)
+        transcript = Transcript(language=info.language, segments=result)
+        if self.settings.diarization:
+            backend = self.diarizer if self.diarizer is not None else PyannoteBackend(self.settings)
+            transcript = assign_speakers(transcript, backend.diarize(audio))
+        return transcript

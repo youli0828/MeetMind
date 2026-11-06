@@ -19,3 +19,11 @@ htmlcov/
 *.mp3
 *.m4a
 *.flac
+*.ogg
+*.webm
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.bin

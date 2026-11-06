@@ -111,9 +111,9 @@ def test_truncation_retried_even_when_json_valid(transcript, minutes):
     assert client.chat.completions.create.call_count == 2
 
 
-def test_long_transcript_rejected_before_request(transcript):
+def test_impossibly_small_chunk_limit_rejected_before_request(transcript):
     client = Mock()
-    with pytest.raises(ValueError, match="exceeds"):
+    with pytest.raises(ValueError, match="too small for transcript metadata"):
         OpenAISummarizer(Settings(max_transcript_chars=1), client=client).summarize(transcript)
     client.chat.completions.create.assert_not_called()
 

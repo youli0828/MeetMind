@@ -67,6 +67,44 @@ Linux/macOS：`python -m venv .venv`，随后使用 `.venv/bin/python` 和 `.ven
 无语音或无效录音会失败，不生成虚构转写。模型运行环境及 GPU 依赖参见
 [faster-whisper 官方说明](https://github.com/SYSTRAN/faster-whisper#usage)。
 
+## 可选说话人分离与长会议摘要
+
+说话人分离默认关闭（`DIARIZATION=0`），默认安装依赖和 ASR 接口不变，音频转写的
+`speaker` 保持 `null`。启用前安装可选依赖：
+
+```powershell
+& .\.venv\Scripts\python.exe -m pip install -e ".[asr,diarization]"
+```
+
+在 Hugging Face 登录并接受 [pyannote Community-1 模型访问条件](https://huggingface.co/pyannote/speaker-diarization-community-1)，
+创建有模型读取权限的令牌。在本机 `.env` 中设置 `HUGGINGFACE_TOKEN`（或 `HF_TOKEN`），
+并设 `DIARIZATION=1`。不要将令牌写入命令行、日志或提交到仓库。
+pyannote 4 使用 PyTorch / torchaudio，音频解码还需要系统 FFmpeg；参考
+[官方安装说明](https://github.com/pyannote/pyannote-audio#installation)。首次调用会下载模型。
+
+CLI `run` 和 API `/audio` 均在 ASR 后运行分离：按每段与各说话人时间区间的累计重叠时长，
+选取最大者；并列时取后端先返回者，无重叠仍为 `null`。标签仅表示同场录音内的匿名说话人，
+不代表姓名或可靠的责任人身份；一句跨说话人的转写只保留一个标签。
+启用后缺少令牌、包或模型不可访问均明确报错，不生成虚假标签。
+导入转写 JSON 不重新运行音频分离。真实分离验证限制见 [e2e 记录](docs/e2e/optional-diarization.md)。
+
+转写 JSON 超过 `MAX_TRANSCRIPT_CHARS` 后，摘要器按时间顺序在分段边界切块，
+每块上限由 `SUMMARIZE_CHUNK_CHARS` 控制，默认跟随 `MAX_TRANSCRIPT_CHARS`。
+相邻块尽量重叠 `SUMMARIZE_CHUNK_OVERLAP_SEGS=2` 段；过大时减少重叠以确保向前推进。
+单段本身超过上限时拆分文本，保留原始分段 ID 和时间范围，引用仍定位到原始分段。
+短会议仍只调用原来的结构化摘要一次。
+
+每块复用原有结构化摘要、来源校验及 `LLM_MAX_ATTEMPTS` 策略（格式/引用失败重试；
+拒绝回答直接失败，传输重试仍由 SDK 处理）。随后发起一次合并阶段调用，合并议题、
+决策和行动项；提示词做语义去重，代码对相同字段内容去重并合并来源 ID。
+合并也遵循原重试策略，并校验各类别引用 ID 集合完整保留且未新增。
+语义去重和纪要事实仍需人工核对；合并输入为各块纪要，极长会议仍可能超出模型上下文。
+
+CLI 在输出目录的 `chunks/` 保存逐块转写与 `chunk-XXXX.minutes.json`；
+API 或直接使用摘要器时保存在 `MEETMIND_DATA_DIR/summarize/<随机ID>/`。
+合并失败会报错并给出保留目录，不发布最终纪要；成功的中间纪要文件始终保留。
+可检查这些文件，并用已保存转写执行 `summarize` 重跑（会重新请求各块，尚无断点续跑）。
+
 ## Docker：三步启动
 
 1. 首次创建配置：Linux/macOS 执行 `cp -n .env.example .env`；PowerShell 执行
@@ -146,7 +184,11 @@ Linux/macOS 将 Python 改为 `.venv/bin/python` 的绝对路径。
 | `LLM_RESPONSE_FORMAT` | `json_schema`；兼容服务可显式改为 `json_object` 或 `text` |
 | `LLM_TIMEOUT_SECONDS` | `60`，单次请求超时 |
 | `LLM_MAX_ATTEMPTS` | `3`，结构化结果校验尝试上限 |
-| `MAX_TRANSCRIPT_CHARS` | `60000`，发送的转写 JSON 字符数上限，超过则报错 |
+| `MAX_TRANSCRIPT_CHARS` | `60000`，转写 JSON 超过此阈值时启用分块摘要 |
+| `SUMMARIZE_CHUNK_CHARS` | 未设置时跟随 `MAX_TRANSCRIPT_CHARS`；分块转写 JSON 字符数上限，最大取上述阈值 |
+| `SUMMARIZE_CHUNK_OVERLAP_SEGS` | `2`，相邻摘要块重叠分段数；受块大小约束，可设为 `0` |
+| `DIARIZATION` | `0`，可选说话人分离；设为 `1` 才加载 pyannote |
+| `HUGGINGFACE_TOKEN` / `HF_TOKEN` | 分离启用时必填；同一来源内前者优先，系统环境始终优先于文件 |
 | `ASR_MODEL` | `medium`，模型名称或本地路径；质量与 RTF 取舍见上文 |
 | `WHISPER_MODEL` | `ASR_MODEL` 的兼容别名，优先规则同上 |
 | `ASR_DEVICE` / `ASR_COMPUTE_TYPE` | `cpu` / `int8` |
@@ -177,7 +219,7 @@ CLI 不打印密钥或原始 API 错误响应。结果包含会议文本，默�
 
 议题含 `title/discussion/source_segment_ids`；决策含 `text/source_segment_ids`；行动项含
 `task/owner/due/source_segment_ids`。`owner`、`due` 未提及时必须为 `null`，无决策等使用空列表。
-相对截止时间保留原话，不猜日期；本地 ASR 不进行说话人分离，`speaker` 为 `null`。
+相对截止时间保留原话，不猜日期；默认不进行说话人分离，`speaker` 为 `null`。
 字段校验和有效引用不等于事实正确，真实纪要仍需人工核对。
 
 在 LLM 调用前保存 `transcript.json`。若调用失败，保留转写以便重试：
@@ -253,9 +295,9 @@ API 测试通过[FastAPI 依赖覆盖](https://github.com/fastapi/fastapi/blob/m
 
 ## 开发与验证
 
-本机最新验证（2026-11-06）：`pytest -q` **118 passed**（1 条既有 Chroma 弃用警告），
-`ruff check .`、`ruff format --check .` 和 `pip check` 均通过；
-官方 SDK stdio 客户端已完成握手、列出工具，并在临时离线 SQLite/Chroma 数据上调用全部五个工具。
+本机最新验证（2026-11-07）：`pytest -q` **135 passed**（1 条既有 Chroma 弃用警告），
+`ruff check .`、`ruff format --check .` 均通过。新增分离 mock、超长转写、重试、去重、引用保留及 API 测试。
+此前 `pip check` 通过；官方 SDK stdio 客户端已完成握手、列出工具，并在临时离线 SQLite/Chroma 数据上调用全部五个工具。
 本机未执行镜像构建；GitHub Actions 运行独立 `docker build` 作业，不推送镜像。
 
 ```powershell
@@ -284,8 +326,8 @@ Agent SSE 工具与最终回答；桌面与 390px 移动端页面无横向溢出
 | M2 | 已实现 Agent 工具循环、SQLite 待办、ICS/Markdown/DOCX、Chroma + BM25 RAG、带引用问答、FastAPI、Web 工作台与离线演示；验证与限制见本文 |
 | M3 | 已实现 MCP stdio/SSE、Docker/Compose、CI 镜像构建、真实 CER 对比与远场 bad case；[小型业务评测](docs/e2e/business-eval/README.md)：离线 Recall@1/@2/@3=1.000（2 块/8 问）；已保存真实纪要 token 集合 F1=0.6437、严格行动项集合 F1=0（单场/3 项）。线上 embedding 召回与大样本评测仍 TODO |
 
-说话人分离（diarization）、实时音频、长会议摘要分块和任务外部写入仍未实现。
-历史检索分块已实现，但纪要生成仍受 `MAX_TRANSCRIPT_CHARS` 限制。
+可选说话人分离及长会议分块摘要已实现，使用方式及限制见上文。
+实时音频和任务外部写入仍未实现。
 单元测试通过不代表模型效果；文末实测指标仅代表指定样本和配置。
 
 历史真实 ASR、聊天及 embedding 调用结果见下文；离线业务指标与适用范围见[业务评测](docs/e2e/business-eval/README.md)。
